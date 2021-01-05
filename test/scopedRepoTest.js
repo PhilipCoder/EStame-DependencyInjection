@@ -19,10 +19,16 @@ describe('scoped repo', function () {
         assert(grantParentClassInstance.parentA.instance !== grantParentClassInstance.parentB.instance, "Instance error" );
         assert(grantParentClassInstance.parentA.me.instance !== grantParentClassInstance.parentB.me.instance, "Instance error" );
 
-        assert(grantParentClassInstance.parentA.scopedGene.instance !== grantParentClassInstance.parentB.scopedGene.instance, "Instance error" );
-        assert(grantParentClassInstance.parentA.me.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstance.parentA.scopedGene.instance === grantParentClassInstance.parentB.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstance.parentA.me.scopedGene.instance === grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
         assert(grantParentClassInstance.parentA.scopedGene.instance === grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error" );
         assert(grantParentClassInstance.parentB.scopedGene.instance === grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
+
+        let grantParentClassInstanceB = new grantParentClassDefinition();
+        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentB.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstanceB.parentA.me.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstanceB.parentB.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
     });
 
 

@@ -1,5 +1,4 @@
-const parameterTypes = require("./types/parameterTypes.js");
-const chainableProxy = require("./chainableProxy.js");
+const parameterTypes = require("../types/parameterTypes.js");
 
 class chainableProxyHandler {
     constructor(nameSpace, parent, property, iocContainer, scopedRepo) {
@@ -95,7 +94,7 @@ class chainableProxyHandler {
     }
 
     static new(nameSpace, parent, property, iocContainer, scopedRepo) {
-        return new Proxy(new chainableProxy(), new chainableProxyHandler(nameSpace, parent, property, iocContainer, scopedRepo));
+        return new Proxy({}, new chainableProxyHandler(nameSpace, parent, property, iocContainer, scopedRepo));
     }
 
     validateAssignment() {

@@ -1,4 +1,4 @@
-const methodHandler = require("./methodHandler.js");
+const methodHandler = require("./methodProxyHandler.js");
 const chainableProxyHandler = require("./chainableProxyHandler.js");
 
 class classProxyHandler {
