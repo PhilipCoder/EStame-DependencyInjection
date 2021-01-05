@@ -1,44 +1,47 @@
-# EStame DI
+<p align="center">
+<img src="res/Logo.png" height="300"  />
+<h1 align="center">ESTame Dependency Injection (AMD)</h1>
 
-The dependency injection module will be used to handle all the dependencies in EStame. The IOC container will act as the module container. 
+<h5 align="center">Build With Proxies - By Philip Schoeman</h5>
+<h5 align="center">License : MIT</h5>
+</p>
 
-The DI proxy should also act as the assignable base proxy. The namespace of the DI proxy should indicate where a proxy can be created on.
+## Introduction
 
-Factories can be registered on a namespace. If a namespace is not found, the factory will be invoked in order to try and load the namespace.
+The ESTame dependency injection framework is a small JavaScript framework that brings powerful dependency injection and inversion of control to JavaScript. Leveraging the power of ES6+ it provides the following features to your JavaScript project:
 
-Named and anonymous IOC entity instances can be created with same syntax as willcore assingables.
+* Constructor parameter injection
+* Method parameter injection
+* Property injection
 
-___
+## Getting Started
 
-* Let's say we have a base EStame class. It is registered as "estame".
-* We can create a HTTP server instance on the estame base proxy. It is registered as "estame/httpServer".
-* The factory for the HTTP server is registered as "estame/httpServer.factory".
-* Additional proxy traps can be registered as "estame/httpServer.traps".
-* IOC entities can be instanciated by getting or setting a property on the parent IOC entity starting with a "$".
-* IOC entities can be created by proxy chains. EStame does not have assignables, classes with constructor parameter definitions are replacing assignables.
-* Nameless IOC entities can be defined by added it on the IOC container with the addAnonymous method. The method should take another string value that is the target the entity can be applied to.
-* Instance IOC entities construction parameter types:
-    * string
-    * number
-    * object
-    * name
-    * parent
-
-Example:
+The ESTame dependency injection module can be installed via NPM:
 
 ```javascript
-const parameterTypes = require("parameterTypes.js");
-class mySQLDB {
-    static get $constructor() { return [mySQLDB.name, mySQLDB.string, mySQLDB.number, "mySQL/dbCreator"] }
-    constructor(name, connectionString, portName, dbCreator) {
-    }
-}
-
-module.exports = mySQLDB;
+npm install estame.di
 ```
+
+## The IOC Container
+
+The IOC container is an object containing the classes and the names they are bound to. With the ESTame dependency injection, the class definitions are bound to string names since JavaScript does not really have types. Name spaces can be used for property injection, more on that in the property injection section.
+
+#### Creating An IOC Container Instance:
 
 ```javascript
-//to add an nameless IOC instance entity
-//can be applied to /estame/server
-iocContainer.addAnonymous("/estame/server/http", httpServer); 
+const container = require("estame.di");
+//Creating a new container instance
+const iocContainer = new container();
+//Adding a class definition to the container
+iocContainer.Add("calculator", require("./calculator"));
 ```
+
+#### Creating A Class Instance From The Container
+
+```javascript
+//Getting the IOC ready class from the IOC container
+const calculatorConstructor = iocContainer.get("calculator");
+//Creating an instance of the class
+const calculator = new calculatorConstructor();
+```
+
