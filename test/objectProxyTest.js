@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const iocContainer = require("../iocContainer.js");
+const iocContainer = require("../iocContainer.js").container;
 const basicClass = require("./classes/basicClass.js");
 const calculator = require("./classes/calculator.js");
 const additionCalc = require("./classes/additionCalc.js");

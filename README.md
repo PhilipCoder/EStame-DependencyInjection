@@ -29,7 +29,7 @@ The IOC container is an object containing the classes and the names they are bou
 #### Creating An IOC Container Instance:
 
 ```javascript
-const container = require("estame.di");
+const container = require("estame.di").container;
 //Creating a new container instance
 const iocContainer = new container();
 //Adding a class definition to the container
@@ -100,7 +100,201 @@ By default when you add an IOC class to the container via the add method, the pr
 Property injection can be activated by accessing a value starting with "$" on a class. With named injected properties, the syntax is:
 
 ```javascript
-classInstance.$propertyName.className
+parentClassInstance.$propertyName.className
 ```
 
-## Dependency Injection Life Cycles
+_Example:_
+
+```javascript
+container.add("basicClass", require("basicClass"));
+container.addAnonymous("basicClass/model", require("model"));
+
+const iocInstance = new (container.get("basicClass"))();
+iocInstance.$myModel.model; //the model class
+//the model instance will be available on the myModel property
+const modelInstance = icoInstance.myModel;
+```
+
+### Anonymous Property Injection
+
+Classes registered as anonymous are assigned to their parent classes with the name they are registered with on the IOC container. Their injection is requested without a name. The syntax is:
+
+```javascript
+parentClassInstance.$className
+```
+
+_Example:_
+
+```javascript
+container.add("basicClass", require("basicClass"));
+container.addAnonymous("basicClass/model", require("model"));
+
+const iocInstance = new (container.get("basicClass"))();
+iocInstance.$myModel.model; //the model class
+//the model instance will be available on the myModel property
+const modelInstance = icoInstance.myModel;
+```
+
+### Constructor Parameter Assignment
+
+When a class is injected on a property, additional parameters that are not registered in the IOC container can be passed to the constructor of the class.
+
+Assigned parameters also need to be defined in the constructor definition of the class. However, they are not defined as strings, but symbols contained on an object that can be accessed:
+
+```javascript
+require("estame.di").types
+```
+
+Available Types For Constructor Parameter Assignment:
+* string
+* number
+* object
+* function
+* boolean
+
+#### Constructor Definitions For Parameter Assignment
+
+Let's say we have a dog class that takes a breed, owner name and settings object as constructor parameters. We can then define the class as following:
+
+```javascript
+const parameterTypes = require("estame.di").types;
+//
+class dog {
+    static get $constructor() { return [parameterTypes.string, parameterTypes.string, parameterTypes.object]; }
+    constructor(breed, ownerName, settings) {
+        this.stringAssignedA = stringAssignedA;
+        this.stringAssignedB = stringAssignedB;
+        this.objectAssigned = objectAssigned;
+    }
+}
+```
+
+When a class has a constructor definition that requires parameters, a proxy object will be assigned to the class until all the parameters are provided. When all the parameters are provided, the class will be constructed with provided values and assigned to the property. 
+
+Values will be assigned on the following events:
+* On assigning a value to the property - value
+* On getting a property from the proxy object - property name
+* On setting a property on the proxy object - property name and value
+
+__Example, property assignment (anonymous):__
+
+```javascript
+container.add("basicClass", require("basicClass"));
+//
+container.addAnonymous("basicClass/dog", require("dog"));
+
+const basicClass = new (container.get("basicClass"))();
+```
+
+To inject the class with the specified 2 string and one object argument as defined in the example above.
+
+```javascript
+//Injecting by assigning values to property
+basicClass.$dog;
+basicClass.dog = "Doberman";
+basicClass.dog = "John";
+basicClass.dog = { age: 5 };
+```
+
+```javascript
+//Injecting by accessing values
+basicClass.$dog.Doberman.John;
+basicClass.dog = { age: 5 };
+```
+
+```javascript
+//Injecting by accessing values and assigning value
+basicClass.$dog.Doberman.John = { age: 5 };
+```
+
+Values assigned can be contained in an array to assign them all at once:
+```javascript
+//Injecting by assigning values to property via an array
+basicClass.$dog = ["Doberman", "Doberman", { age: 5 }];
+```
+
+__Example, property assignment (named):__
+
+```javascript
+container.add("basicClass", require("basicClass"));
+//
+container.add("basicClass/dog", require("dog"));
+
+const basicClass = new (container.get("basicClass"))();
+```
+
+To inject the class with the specified 2 string and one object argument as defined in the example above.
+
+```javascript
+//Injecting by assigning values to property
+basicClass.$someDog.dog;
+basicClass.someDog = "Doberman";
+basicClass.someDog = "John";
+basicClass.someDog = { age: 5 };
+```
+
+```javascript
+//Injecting by accessing values
+basicClass.$someDog.dog.Doberman.John;
+basicClass.someDog = { age: 5 };
+```
+
+```javascript
+//Injecting by accessing values and assigning value
+basicClass.$someDog.dog.Doberman.John = { age: 5 };
+```
+
+Values assigned can be contained in an array to assign them all at once:
+```javascript
+//Injecting by assigning values to property via an array
+basicClass.$someDog.dog = ["Doberman", "Doberman", { age: 5 }];
+```
+
+## IOC Container Reference
+
+### add
+
+The add method can be used to register a class definition. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered with the add method, a new instance will be injected every time the class is injected.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | string | The class definition to register in the IOC container |
+| detached | boolean | When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected. |
+
+Can be used to register classes for:
+* Constructor parameter injection
+* Method parameter injection
+* Property injection
+
+### addScoped
+
+The addScoped method can be used to register a class definition in a scoped context. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered with the addScoped method, a new instance will be created for every time a class is manually constructed from the get method of the IOC container. When a class is created from the IOC container, all classes referenced by the class will receive the same instance, but when a new class is constructed from the container, a new instance will be injected for the new class.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | string | The class definition to register in the IOC container |
+
+Can be used to register classes for:
+* Constructor parameter injection
+* Method parameter injection
+
+### addSingleton
+
+The addScoped method can be used to register a class definition as a singleton. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered as a singleton, a new instance will be created the first time it is injected, and after that the same instance will be injected every time the class is injected.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | string | The class definition to register in the IOC container |
+
+Can be used to register classes for:
+* Constructor parameter injection
+* Method parameter injection

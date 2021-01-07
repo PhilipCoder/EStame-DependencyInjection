@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const iocContainer = require("../iocContainer.js");
+const iocContainer = require("../iocContainer.js").container;
 const grandParent = require("./scopedRepoMocks/grandParent");
 const parent = require("./scopedRepoMocks/parent");
 const me = require("./scopedRepoMocks/me");

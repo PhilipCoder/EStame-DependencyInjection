@@ -47,7 +47,7 @@ class iocContainer {
 
     addValue(nameSpace, value) {
         validateIOCValues(nameSpace, this.iocEntities);
-        this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced };
+        this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, isValue:true };
     }
 
     add(nameSpace, classDefinition, detached = false) {
@@ -61,8 +61,8 @@ class iocContainer {
     }
 
     addAnonymousValue(nameSpace, value) {
-        validateIOCValues(nameSpace, classDefinition, this.iocEntities);
-        this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, anonymous: true };
+        validateIOCValues(nameSpace, value, this.iocEntities);
+        this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, anonymous: true, isValue:true };
     }
 
     get(nameSpace) {
@@ -90,4 +90,4 @@ class iocContainer {
     }
 }
 
-module.exports = iocContainer;
+module.exports = { container: iocContainer, types: iocTypes };

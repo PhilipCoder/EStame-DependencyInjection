@@ -1,4 +1,5 @@
 const parameterTypes = require("../types/parameterTypes.js");
+const chainableProxy = require("./chainableProxy.js");
 
 class chainableProxyHandler {
     constructor(nameSpace, parent, property, iocContainer, scopedRepo) {
@@ -35,16 +36,20 @@ class chainableProxyHandler {
         }
         else {
             let iocDefinition = iocContainer.iocEntities[anonymousNamespace];
-            if (!iocDefinition.anonymous) throw `Namespace ${anonymousNamespace} requires a name.`;
-            this.nameSpace = anonymousNamespace;
-            this.constructorDefinition = iocDefinition.classDefinition.$constructor;
-            this.populateAssignedParameterCount();
+            if (iocDefinition.isValue) {
+                this.value = iocDefinition.value;
+            } else {
+                if (!iocDefinition.anonymous) throw `Namespace ${anonymousNamespace} requires a name.`;
+                this.nameSpace = anonymousNamespace;
+                this.constructorDefinition = iocDefinition.classDefinition.$constructor;
+                this.populateAssignedParameterCount();
+            }
         }
     }
 
     completeAssignment() {
         let resultConstructor = this.iocContainer.__new(this.nameSpace, this.scopedRepo, this.parent, this.name, this.assignedParameters);
-        this.parent[this.name || this.property] = new resultConstructor();
+        this.parent._target[this.name || this.property] = new resultConstructor();
         if (this.iocContainer.iocEntities[this.nameSpace].detached) {
             delete this.parent[this.name || this.property];
         }
@@ -52,6 +57,7 @@ class chainableProxyHandler {
 
     get(target, property, proxy) {
         if (property === "_$instanceIndicator") return this.instanceIndicator;
+        else if (property === "_$value") return this.value;
         if (this.requiresName && !this.constructorDefinition) {
             this.initNamedAssignable(property);
         } else {
@@ -67,34 +73,42 @@ class chainableProxyHandler {
     }
 
     initNamedAssignable(property) {
-      //  this.name = property;
+        //  this.name = property;
         this.nameSpace = `${this.nameSpace}/${property}`;
         if (!this.iocContainer.exists(this.nameSpace))
             throw `Namespace not found ${this.nameSpace}.`;
         let iocDefinition = this.iocContainer.iocEntities[this.nameSpace];
         if (iocDefinition.anonymous)
             throw `Namespace ${this.nameSpace} is defined as anonymous but is used in a named context.`;
-        this.constructorDefinition = iocDefinition.classDefinition.$constructor;
-        this.populateAssignedParameterCount();
+        if (iocDefinition.isValue) {
+            this.parent._target[this.name] = iocDefinition.value;
+        } else {
+            this.constructorDefinition = iocDefinition.classDefinition.$constructor;
+            this.populateAssignedParameterCount();
+        }
     }
 
     set(target, property, value, proxy) {
         if (this.requiresName && !this.constructorDefinition) {
             this.initNamedAssignable(property);
-        } else if (property !== "__$someValue"){
-             this.assignedParameters.push(property);
-             this.updateAssignedValueCount(property);
-         }
-        this.assignedParameters.push(value);
-        this.updateAssignedValueCount(value);
-        if (this.isCompleted) {
-            this.completeAssignment();
+        } else if (property !== "__$someValue") {
+            this.assignedParameters.push(property);
+            this.updateAssignedValueCount(property);
+        }
+        if (property === "__$someValue" && Array.isArray(value)) {
+            value.forEach(x => this.parent[this.name || this.property] = x);
+        } else {
+            this.assignedParameters.push(value);
+            this.updateAssignedValueCount(value);
+            if (this.isCompleted) {
+                this.completeAssignment();
+            }
         }
         return true;
     }
 
     static new(nameSpace, parent, property, iocContainer, scopedRepo) {
-        return new Proxy({}, new chainableProxyHandler(nameSpace, parent, property, iocContainer, scopedRepo));
+        return new Proxy(new chainableProxy(), new chainableProxyHandler(nameSpace, parent, property, iocContainer, scopedRepo));
     }
 
     validateAssignment() {
@@ -103,9 +117,9 @@ class chainableProxyHandler {
         }
     }
 
-    updateAssignedValueCount(value){
+    updateAssignedValueCount(value) {
         let valueType = typeof value;
-        if (this.assignedParameterTypeCount[valueType] !== undefined){
+        if (this.assignedParameterTypeCount[valueType] !== undefined) {
             this.assignedParameterTypeCount[valueType]++;
         }
     }
