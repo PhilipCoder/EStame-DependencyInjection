@@ -91,6 +91,43 @@ describe('assignable IOC', function () {
         assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
     });
 
+    it("anonymous assignment invalid namespace", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.addAnonymous("basicClass/model", modelAssignable);
+        container.addAnonymous("basicClass/iocComplex", iocAssignable);
+
+        const iocInstance = new (container.get("basicClass"))();
+        const five = 5;
+        iocInstance.$model = (value) => five * 2;
+        let model = iocInstance.model;
+        assert(model.functionAssigned() === 10, "Wrong result value");
+
+        assert.Throw(()=> iocInstance.model.$iocComplex.one.two = { value: 5 }, "Namespace not found one.");;
+    });
+    it("anonymous assignment complex no namespace", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.addAnonymous("basicClass/model", modelAssignable);
+        container.addAnonymous("iocComplex", iocAssignable);
+
+        const iocInstance = new (container.get("basicClass"))();
+        const five = 5;
+        iocInstance.$model = (value) => five * 2;
+        let model = iocInstance.model;
+        assert(model.functionAssigned() === 10, "Wrong result value");
+
+        iocInstance.model.$iocComplex.one.two = { value: 5 };
+
+        let complexIOC = iocInstance.model.iocComplex;
+        
+        assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
+        assert(complexIOC.stringAssignedA === "one", "Wrong result value");
+        assert(complexIOC.stringAssignedB === "two", "Wrong result value");
+        assert(complexIOC.name === null, "Wrong result value");
+        assert(complexIOC.parent === iocInstance.model, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+    });
     
     it("anonymous assignment complex line based", function () {
         const container = new iocContainer();

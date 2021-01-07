@@ -42,6 +42,7 @@ describe('objectProxy', function () {
         let generatorInstance = new invoiceGeneratorClassDefinition();
         let invoice = generatorInstance.generateInvoice(500, "The Name");
         assert(invoice.account === "Doe", "Incorrect value returned.");
+        assert(generatorInstance.container instanceof iocContainer, "Incorrect value returned.");
         assert(invoice.totalValue === 500, "Incorrect value returned.");
         assert(invoice.invoiceDetail.name === "The Name", "Incorrect value returned.");
         assert(invoice.invoiceDetail.values[0] === 6, "Incorrect value returned.");

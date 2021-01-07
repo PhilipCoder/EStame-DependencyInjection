@@ -30,6 +30,7 @@ class chainableProxyHandler {
         };
         //anonymous assignable
         let anonymousNamespace = `${nameSpace}/${property}`;
+        anonymousNamespace = iocContainer.exists(anonymousNamespace) ? anonymousNamespace : property;
         this.requiresName = !iocContainer.exists(anonymousNamespace);
         if (this.requiresName) {
             this.name = this.property;
@@ -73,8 +74,8 @@ class chainableProxyHandler {
     }
 
     initNamedAssignable(property) {
-        //  this.name = property;
         this.nameSpace = `${this.nameSpace}/${property}`;
+        this.nameSpace = this.iocContainer.exists(this.nameSpace) ? this.nameSpace : property;
         if (!this.iocContainer.exists(this.nameSpace))
             throw `Namespace not found ${this.nameSpace}.`;
         let iocDefinition = this.iocContainer.iocEntities[this.nameSpace];

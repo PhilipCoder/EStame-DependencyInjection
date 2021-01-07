@@ -79,19 +79,36 @@ class calculator {
 }
 ```
 
+Parameters that will be injected manually, are defined as undefined. To call the method defined in the class above, only 2 parameters is passed, the third is injected:
+
+```javascript
+const container = require("estame.di").container;
+//Creating a new container instance
+const iocContainer = new container();
+//Adding a class definition to the container
+iocContainer.Add("calculator", require("./calculator"));
+iocContainer.Add("additionCalc", require("./additionCalc"));
+
+const calculatorClass = iocContainer.get("calculator");
+const calculator = new calculatorClass();
+//Calling the method with 2 parameters. The third parameter is injected.
+let operationResult = calculator.getValue(2,6);
+```
+
 ## Property Injection
 
 Property injection allows dependency injection on properties of an injected class.
 
-Property injection use the names of the registered IOC classes to define where they can be injected. Unlike constructor and method injection, property injection can only happen on the "namespaces" assigned to them. 
+Property injection can be defined use the names of the registered IOC classes to define where they can be injected. When a class is registered with a forward slash in the name ("/"),the property injection can only happen on the "namespaces" assigned to them. When a class is registered without a forward slash in the name, it can be injected on any class.
 
 Example:
+
 * classA is registered with name "classA"
 * classB is registered with name "classB"
 * classC is registered with name "classA/classC"
 * classD is registered with name "classA/classC/classD"
 
-In this example classC can be assigned to classA and classD can be assigned to classC.
+In this example classC can be assigned to classA and classD can be assigned to classC. ClassA and ClassB can be injected on all other classes.
 
 ### Named Property Injection
 
@@ -261,10 +278,11 @@ The add method can be used to register a class definition. The object registered
 | Parameter Name | Type | Description |
 | -------------- | ------- | ----------- |
 | nameSpace | string | The name of the class or the namespace of the class. |
-| classDefinition | string | The class definition to register in the IOC container |
+| classDefinition | class | The class definition to register in the IOC container |
 | detached | boolean | When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected. |
 
 Can be used to register classes for:
+
 * Constructor parameter injection
 * Method parameter injection
 * Property injection
@@ -278,9 +296,10 @@ The addScoped method can be used to register a class definition in a scoped cont
 | Parameter Name | Type | Description |
 | -------------- | ------- | ----------- |
 | nameSpace | string | The name of the class or the namespace of the class. |
-| classDefinition | string | The class definition to register in the IOC container |
+| classDefinition | class | The class definition to register in the IOC container |
 
 Can be used to register classes for:
+
 * Constructor parameter injection
 * Method parameter injection
 
@@ -293,8 +312,89 @@ The addScoped method can be used to register a class definition as a singleton. 
 | Parameter Name | Type | Description |
 | -------------- | ------- | ----------- |
 | nameSpace | string | The name of the class or the namespace of the class. |
-| classDefinition | string | The class definition to register in the IOC container |
+| classDefinition | class | The class definition to register in the IOC container |
 
 Can be used to register classes for:
+
 * Constructor parameter injection
 * Method parameter injection
+
+### addAnonymous
+
+The addAnonymous method can be used to register a class definition for property injection. The object registered must have a constructor available since the framework will create a new instance when injected. 
+
+> When a class is registered with the addAnonymous method, a new instance will be injected every time the class and the properties will have no names.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | class | The class definition to register in the IOC container |
+| detached | boolean | When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected. |
+
+Can be used to register classes for:
+
+* Property injection
+
+### addValue
+
+The addValue method can be used to register an object or value that will be injected without the constructor being called. When used with property injection, objects registered with addValue will require a name.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| value | any | The object to register into the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+* Property injection
+
+### addAnonymousValue
+
+The addAnonymousValue method can be used to register an object or value that will be injected without the constructor being called. When used with property injection, objects registered with addAnonymousValue will not require a name.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| value | any | The object to register into the IOC container |
+
+Can be used to register classes for:
+
+* Property injection
+
+### get
+
+Dependency injection ready classes can be retrieved via the get method. This is the method to be used after a class is registered in the IOC container. Please note that this not a class instance, the constructor on the result of the get method should be used to get an instance of the class.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+
+### exists
+
+Runs IOC container factories and checks if a class is registered in the IOC container.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+
+## Parameter Types
+
+The parameter types can be accessed from an object exported from the main estame.di module.
+
+__Parameter types:__
+
+| Type Name | Description | Can Be Used On |
+| -------------- | ------- | ----------- |
+| parent | The parent class of the current class instance. | All |
+| container | The IOC container instance. | All |
+| string | Defines an assignable string parameter. | Named and anonymous property injection |
+| number | Defines an assignable number parameter. | Named and anonymous property injection |
+| object | Defines an assignable object parameter. | Named and anonymous property injection |
+| function | Defines an assignable function parameter. | Named and anonymous property injection |
+| boolean | Defines an assignable boolean parameter. | Named and anonymous property injection |
+| name | The name of a named injected property. | Named property injection |
+
+
+

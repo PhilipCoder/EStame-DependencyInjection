@@ -1,5 +1,7 @@
 const constructProxyHandler = require("./ProxyHandlers/constructProxyHandler.js");
 const iocTypes = require("./types/ioc.js");
+const parameterTypes = require("./types/parameterTypes.js");
+
 
 const validateIOCClassValues = (nameSpace, classDefinition, iocContainer) => {
     if (typeof nameSpace !== "string") throw 'The namespace of an IOC entity has to be a string.';
@@ -90,4 +92,4 @@ class iocContainer {
     }
 }
 
-module.exports = { container: iocContainer, types: iocTypes };
+module.exports = { container: iocContainer, types: parameterTypes };

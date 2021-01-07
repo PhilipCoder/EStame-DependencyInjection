@@ -1,8 +1,11 @@
+const types = require("../../iocContainer.js").types;
+
 class invoiceGenerator{
-    static get $constructor(){ return ["accountName", "invoiceLogic"]; }
-    constructor(account, logic){
+    static get $constructor(){ return ["accountName", "invoiceLogic", types.container]; }
+    constructor(account, logic, container){
         this.logic = logic;
         this.account = account;
+        this.container = container;
     }
 
     generateInvoice(totalValue, name){

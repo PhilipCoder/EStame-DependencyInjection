@@ -34,6 +34,8 @@ function getMethodParameters(target, iocContainerInstance, scopedRepo, parent, a
                 parameterValue = parent;
             } else if (target.$constructor[i] === parameterTypes.name) {
                 parameterValue = name;
+            } else if (target.$constructor[i] === parameterTypes.container) {
+                parameterValue = iocContainerInstance;
             }
             parameters.push(parameterValue);
         }
