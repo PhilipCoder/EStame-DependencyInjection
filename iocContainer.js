@@ -18,16 +18,7 @@ const validateIOCValues = (nameSpace, iocContainer) => {
 
 const loadFactories = (nameSpace, containerInstance) => {
     for (let index = 0; index < containerInstance.factories.length; index++) {
-        let factories = containerInstance.factories[index](nameSpace);//should return { classDefinition, isAnonymous, namespace }
-        if (factories && Array.isArray(factories)) {
-            factories.forEach(factory => {
-                if (factory.isAnonymous) {
-                    containerInstance.addAnonymous(factory.namespace, factory.classDefinition);
-                } else {
-                    containerInstance.add(factory.namespace, factory.classDefinition);
-                }
-            });
-        }
+        containerInstance.factories[index](nameSpace, containerInstance);
     }
 };
 
@@ -35,9 +26,12 @@ const loadFactories = (nameSpace, containerInstance) => {
  * The IOC container is an object containing the classes and the names they are bound to. 
  */
 class iocContainer {
-    constructor() {
+    constructor(factories) {
+        /**
+         * Object containing
+         */
         this.iocEntities = {};
-        this.factories = [];
+        this.factories = factories || [];
     }
 
     /**
