@@ -1,0 +1,38 @@
+{
+    "name": "estame.di",
+    "version": "0.0.1",
+    "description": "A small but powerful dependency injection famework.",
+    "main": "iocContainer.js",
+    "directories": {
+      "test": "test"
+    },
+    "devDependencies": {
+      "chai": "^4.2.0",
+      "mocha": "^8.2.1"
+    },
+    "scripts": {
+      "test": "test"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/PhilipCoder/EStame-DependencyInjection.git"
+    },
+    "keywords": [
+      "Proxies",
+      "Assignables"
+    ],
+    "author": "Philip Schoeman",
+    "license": "LGPL-2.1-only",
+    "bugs": {
+      "url": "https://github.com/PhilipCoder/EStame-DependencyInjection/issues"
+    },
+    "homepage": "https://github.com/PhilipCoder/EStame-DependencyInjection#readme",
+    "files": [
+      "/iocContainer.js",
+      "/ProxyHandlers",
+      "/state",
+      "/types"
+    ],
+    "dependencies": {}
+  }
+  
