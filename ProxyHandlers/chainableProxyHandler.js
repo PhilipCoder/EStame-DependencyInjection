@@ -42,7 +42,7 @@ class chainableProxyHandler {
             } else {
                 if (!iocDefinition.anonymous) throw `Namespace ${anonymousNamespace} requires a name.`;
                 this.nameSpace = anonymousNamespace;
-                this.constructorDefinition = iocDefinition.classDefinition.$constructor;
+                this.constructorDefinition = iocDefinition.classDefinition.$constructor || [];
                 this.populateAssignedParameterCount();
             }
         }
@@ -52,13 +52,16 @@ class chainableProxyHandler {
         let resultConstructor = this.iocContainer.__new(this.nameSpace, this.scopedRepo, this.parent, this.name, this.assignedParameters);
         this.parent._target[this.name || this.property] = new resultConstructor();
         if (this.iocContainer.iocEntities[this.nameSpace].detached) {
-            delete this.parent[this.name || this.property];
+            delete this.parent._target[this.name || this.property];
         }
     }
 
     get(target, property, proxy) {
         if (property === "_$instanceIndicator") return this.instanceIndicator;
         else if (property === "_$value") return this.value;
+        else if (property ==="_handler"){
+            return this;
+        }
         if (this.requiresName && !this.constructorDefinition) {
             this.initNamedAssignable(property);
         } else {
@@ -67,7 +70,7 @@ class chainableProxyHandler {
         }
         if (this.isCompleted) {
             this.completeAssignment();
-            return this.parentTarget[this.parentProperty];
+            return this.parent._target[this.parentProperty];
         } else {
             return proxy;
         }
@@ -84,7 +87,7 @@ class chainableProxyHandler {
         if (iocDefinition.isValue) {
             this.parent._target[this.name] = iocDefinition.value;
         } else {
-            this.constructorDefinition = iocDefinition.classDefinition.$constructor;
+            this.constructorDefinition = iocDefinition.classDefinition.$constructor || [];
             this.populateAssignedParameterCount();
         }
     }

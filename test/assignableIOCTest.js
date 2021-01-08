@@ -225,4 +225,26 @@ describe('assignable IOC', function () {
         let result = iocInstance.myValue;
         assert(result.value === 4, "Wrong result value");
     });
+
+    it("no parameters named", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.add("basicClass/value",basicClass);
+
+        const iocInstance = new (container.get("basicClass"))();
+        iocInstance.$child.value
+        let result = iocInstance.child;
+        assert(result.addValue(3,1) === 4, "Wrong result value");
+    });
+
+    it("no parameters anonymous", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.addAnonymous("basicClass/value",basicClass);
+
+        const iocInstance = new (container.get("basicClass"))();
+        iocInstance.$value
+        let result = iocInstance.value;
+        assert(result.addValue(3,1) === 4, "Wrong result value");
+    });
 });

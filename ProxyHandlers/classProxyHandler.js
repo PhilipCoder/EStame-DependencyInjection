@@ -45,6 +45,9 @@ class classProxyHandler {
             if (target[propertyName]._$value) {
                 target[propertyName] = target[propertyName]._$value;
             } 
+            if (target[propertyName]._handler && target[propertyName]._handler.requiresName === false && target[propertyName]._handler.isCompleted){
+                target[propertyName]._handler.completeAssignment();
+            }
         }
         return target[propertyName];
     }
