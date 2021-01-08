@@ -35,7 +35,6 @@
     "/types"
   ],
   "dependencies": {
-    "module-alias": "^2.2.2"
   },
   "_moduleAliases": {
     "estame.basicClass": "test/factories/server.js"
