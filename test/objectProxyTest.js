@@ -28,7 +28,11 @@ describe('objectProxy', function () {
         let calculatorClassDefinition = container.get("calculator");
         let calculatorInstance = new calculatorClassDefinition();
         let addition = calculatorInstance.getValue(5, 4);
+        let additionB = calculatorInstance.getValue(8, 4);
+
         assert(addition === 9, "Incorrect value returned.");
+        assert(additionB === 12, "Incorrect value returned.");
+
     });
 
     it("constructorInjection", function () {
@@ -38,13 +42,18 @@ describe('objectProxy', function () {
         container.add("invoiceDAL", invoiceDAL);
         container.addValue("accountName", "Doe");
 
-        let invoiceGeneratorClassDefinition = container.get("invoiceGenerator");
+        let invoiceGeneratorClassDefinition = container.get("invoiceGenerator",["Jan",20]);
         let generatorInstance = new invoiceGeneratorClassDefinition();
         let invoice = generatorInstance.generateInvoice(500, "The Name");
+        let invoiceB = generatorInstance.generateInvoice(5000, "The NameB");
+        assert(generatorInstance.stringValue === "Jan", "Parameter value not assigned");
+        assert(generatorInstance.numberValue === 20, "Parameter value not assigned");
         assert(invoice.account === "Doe", "Incorrect value returned.");
         assert(generatorInstance.container instanceof iocContainer, "Incorrect value returned.");
         assert(invoice.totalValue === 500, "Incorrect value returned.");
+        assert(invoiceB.totalValue === 5000, "Incorrect value returned.");
         assert(invoice.invoiceDetail.name === "The Name", "Incorrect value returned.");
+        assert(invoiceB.invoiceDetail.name === "The NameB", "Incorrect value returned.");
         assert(invoice.invoiceDetail.values[0] === 6, "Incorrect value returned.");
         assert(invoice.invoiceDetail.values[1] === 9, "Incorrect value returned.");
         assert(invoice.invoiceDetail.values[2] === 12, "Incorrect value returned.");

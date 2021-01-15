@@ -100,9 +100,9 @@ class iocContainer {
      * Dependency injection ready classes can be retrieved via the get method. This is the method to be used after a class is registered in the IOC container. Please note that this not a class instance, the constructor on the result of the get method should be used to get an instance of the class.
      * @param {string} nameSpace The name of the class or the namespace of the class.
      */
-    get(nameSpace) {
+    get(nameSpace, parameters) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return new Proxy(this.iocEntities[nameSpace].classDefinition, new constructProxyHandler(this.iocEntities[nameSpace].type, nameSpace, {}, this, undefined, undefined, undefined, true));
+        return new Proxy(this.iocEntities[nameSpace].classDefinition, new constructProxyHandler(this.iocEntities[nameSpace].type, nameSpace, {}, this, undefined, undefined, parameters, true));
     }
 
     /**

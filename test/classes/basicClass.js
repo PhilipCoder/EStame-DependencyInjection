@@ -1,6 +1,5 @@
 class basicClass {
     constructor() {
-
     }
 
     addValue(a, b) {

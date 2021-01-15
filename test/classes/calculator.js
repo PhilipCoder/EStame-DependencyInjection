@@ -3,8 +3,12 @@ class calculator {
 
     }
 
-    get $getValue() { return [undefined, undefined, "additionCalc"] }
+    get $getValue() { 
+        var aa = this;
+        return [undefined, undefined, "additionCalc"] }
     getValue(a, b, additionCalc) {
+        var aa = this;
+
         return additionCalc.addValue(a, b);
     }
 }

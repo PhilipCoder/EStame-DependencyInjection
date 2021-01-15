@@ -82,13 +82,13 @@ describe('assignable IOC', function () {
         iocInstance.model.$iocComplex.one.two = { value: 5 };
 
         let complexIOC = iocInstance.model.iocComplex;
-        
+
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
-        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
     });
 
     it("anonymous assignment invalid namespace", function () {
@@ -103,7 +103,7 @@ describe('assignable IOC', function () {
         let model = iocInstance.model;
         assert(model.functionAssigned() === 10, "Wrong result value");
 
-        assert.Throw(()=> iocInstance.model.$iocComplex.one.two = { value: 5 }, "Namespace not found one.");;
+        assert.Throw(() => iocInstance.model.$iocComplex.one.two = { value: 5 }, "Namespace not found one.");;
     });
     it("anonymous assignment complex no namespace", function () {
         const container = new iocContainer();
@@ -120,15 +120,15 @@ describe('assignable IOC', function () {
         iocInstance.model.$iocComplex.one.two = { value: 5 };
 
         let complexIOC = iocInstance.model.iocComplex;
-        
+
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
-        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
     });
-    
+
     it("anonymous assignment complex line based", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
@@ -143,17 +143,17 @@ describe('assignable IOC', function () {
 
         iocInstance.model.$iocComplex = "one";
         iocInstance.model.iocComplex = "two";
-        iocInstance.model.iocComplex =  { value: 5 };
+        iocInstance.model.iocComplex = { value: 5 };
 
 
         let complexIOC = iocInstance.model.iocComplex;
-        
+
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
-        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
     });
 
 
@@ -169,16 +169,16 @@ describe('assignable IOC', function () {
         let model = iocInstance.model;
         assert(model.functionAssigned() === 10, "Wrong result value");
 
-        iocInstance.model.$iocComplex = ["one","two",{ value: 5 }];
+        iocInstance.model.$iocComplex = ["one", "two", { value: 5 }];
 
         let complexIOC = iocInstance.model.iocComplex;
-        
+
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
-        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
     });
     it("named assignment complex", function () {
         const container = new iocContainer();
@@ -195,19 +195,19 @@ describe('assignable IOC', function () {
         iocInstance.model.$theName.iocComplex.one.two = { value: 5 };
 
         let complexIOC = iocInstance.model.theName;
-        
+
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === "theName", "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
-        assert(complexIOC.basicClass.addValue(2,1) === 3, "Wrong result value");
+        assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
     });
-    
+
     it("anonymous value assignment complex", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
-        container.addAnonymousValue("basicClass/value", {value:4});
+        container.addAnonymousValue("basicClass/value", { value: 4 });
 
         const iocInstance = new (container.get("basicClass"))();
         iocInstance.$value
@@ -218,7 +218,7 @@ describe('assignable IOC', function () {
     it("named value assignment complex", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
-        container.addValue("basicClass/value", {value:4});
+        container.addValue("basicClass/value", { value: 4 });
 
         const iocInstance = new (container.get("basicClass"))();
         iocInstance.$myValue.value
@@ -229,22 +229,44 @@ describe('assignable IOC', function () {
     it("no parameters named", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
-        container.add("basicClass/value",basicClass);
+        container.add("basicClass/value", basicClass);
 
         const iocInstance = new (container.get("basicClass"))();
         iocInstance.$child.value
         let result = iocInstance.child;
-        assert(result.addValue(3,1) === 4, "Wrong result value");
+        assert(result.addValue(3, 1) === 4, "Wrong result value");
     });
 
     it("no parameters anonymous", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
-        container.addAnonymous("basicClass/value",basicClass);
+        container.addAnonymous("basicClass/value", basicClass);
 
         const iocInstance = new (container.get("basicClass"))();
         iocInstance.$value
         let result = iocInstance.value;
-        assert(result.addValue(3,1) === 4, "Wrong result value");
+        assert(result.addValue(3, 1) === 4, "Wrong result value");
+    });
+
+    it("no parameters named detached", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.add("basicClass/value", basicClass, true);
+
+        const iocInstance = new (container.get("basicClass"))();
+        let result = iocInstance.$one.value
+        assert(result.addValue(3, 1) === 4, "Wrong result value");
+        assert(iocInstance.one === undefined, "Detached should be undefined");
+    });
+
+    it("no parameters anonymous detached", function () {
+        const container = new iocContainer();
+        container.add("basicClass", basicClass);
+        container.addAnonymous("basicClass/value", basicClass, true);
+
+        const iocInstance = new (container.get("basicClass"))();
+        let result = iocInstance.$value
+        assert(result.addValue(3, 1) === 4, "Wrong result value");
+        assert(iocInstance.value === undefined, "Detached should be undefined");
     });
 });

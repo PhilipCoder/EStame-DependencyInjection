@@ -36,9 +36,10 @@ class classProxyHandler {
             return this.namespace;
         } else if (property ==="_target"){
             return target;
+        } else if (this.methodProxies[property]){
+            return this.methodProxies[property];
         }
-        else if (typeof target[property] === "function" && Array.isArray(target[`$${property}`])) {
-            this.methodProxies[property] = this.methodProxies[property] || new Proxy(target[property], new methodHandler(target[`$${property}`], Object.assign({},this.scopedRepo), this.iocContainerInstance));
+        else if (typeof target[property] === "function" && this.registerMethod(property,target,target[`$${property}`])) {
             return this.methodProxies[property];
         } else if (target[property] === undefined && property.startsWith("$")) {
             target[propertyName] = chainableProxyHandler.new(this.namespace, proxy, propertyName, this.iocContainerInstance, this.scopedRepo);
@@ -46,10 +47,16 @@ class classProxyHandler {
                 target[propertyName] = target[propertyName]._$value;
             } 
             if (target[propertyName]._handler && target[propertyName]._handler.requiresName === false && target[propertyName]._handler.isCompleted){
-                target[propertyName]._handler.completeAssignment();
+                return target[propertyName]._handler.completeAssignment();
             }
         }
         return target[propertyName];
+    }
+
+    registerMethod(property,target,definition){
+        if (!Array.isArray(definition)) return false;
+        this.methodProxies[property] = new Proxy(target[property], new methodHandler(definition, Object.assign({},this.scopedRepo), this.iocContainerInstance));
+        return true;
     }
 }
 
