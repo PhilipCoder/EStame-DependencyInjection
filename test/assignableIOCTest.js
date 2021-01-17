@@ -269,4 +269,14 @@ describe('assignable IOC', function () {
         assert(result.addValue(3, 1) === 4, "Wrong result value");
         assert(iocInstance.value === undefined, "Detached should be undefined");
     });
+
+    it("Injecting container", function () {
+        const container = new iocContainer();
+        container.add("basicClass", require("./classes/methodInjection.js"));
+
+        const iocInstance = new (container.get("basicClass"))();
+        let result = iocInstance.addValue(3, 1);
+        assert(result.value === 4, "Wrong result value");
+        assert(typeof result.container.add === "function", "Container not injected");
+    });
 });

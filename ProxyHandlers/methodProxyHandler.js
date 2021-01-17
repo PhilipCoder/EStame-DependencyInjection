@@ -1,3 +1,5 @@
+const getMethodParameters = require("../helpers/methodParameters.js");
+
 class methodHandler {
     constructor(methodDefinition, scopedRepo, iocContainerInstance) {
         this.methodDefinition = methodDefinition;
@@ -6,15 +8,8 @@ class methodHandler {
     }
 
     apply(target, that, args) {
-        let parameters = [];
-        for (let i = 0; i < this.methodDefinition.length; i++) {
-            let parameterValue = typeof this.methodDefinition[i] === "string" ?
-                this.iocContainerInstance.__get(this.methodDefinition[i], this.scopedRepo) :
-                args.length > i ?
-                    args[i] :
-                    undefined;
-            parameters.push(parameterValue);
-        }
+        let parameters = getMethodParameters(this.methodDefinition, this.iocContainerInstance,this.scopedRepo,null,Array.from(args),null, null)
+
         return target.bind(that, ...parameters)();
     }
 }
