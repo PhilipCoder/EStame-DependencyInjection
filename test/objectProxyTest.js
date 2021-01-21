@@ -9,7 +9,7 @@ const invoiceDAL = require("./classes/invoiceDAL.js");
 
 
 describe('objectProxy', function () {
-    it("basicConstructor",function () {
+    it("basic constructor",function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
 
@@ -19,7 +19,7 @@ describe('objectProxy', function () {
         assert(addition === 9, "Incorrect value returned.");
     });
 
-    it("methodInjection", function () {
+    it("method injection", function () {
         const container = new iocContainer();
         container.add("calculator", calculator);
         container.add("additionCalc", additionCalc);
@@ -35,7 +35,7 @@ describe('objectProxy', function () {
 
     });
 
-    it("constructorInjection", function () {
+    it("constructor injection", function () {
         const container = new iocContainer();
         container.add("invoiceGenerator", invoiceGenerator);
         container.add("invoiceLogic", invoiceLogic);
@@ -58,5 +58,22 @@ describe('objectProxy', function () {
         assert(invoice.invoiceDetail.values[1] === 9, "Incorrect value returned.");
         assert(invoice.invoiceDetail.values[2] === 12, "Incorrect value returned.");
     });
+
+    it("constructor injection inherited namespaces", function () {
+        const container = new iocContainer();
+        container.add("server", require("./classesInheritedNamespace/server.js"));
+        container.add("server/controller", require("./classesInheritedNamespace/controller.js"));
+        container.add("server/controller/action", require("./classesInheritedNamespace/action.js"));
+
+        let serverDefinition = container.get("server");
+        let serverInstance =  new serverDefinition();
+        let action = serverInstance.controller.getAction();
+        assert(serverInstance.name === "server", "Server wrongly assigned");
+        assert(serverInstance.controller.name === "controller", "Controller wrongly assigned");
+        assert(serverInstance.controller.action.name === "action", "Action wrongly assigned");
+        assert(action.name === "action", "Action wrongly assigned");
+
+    });
+
 
 });

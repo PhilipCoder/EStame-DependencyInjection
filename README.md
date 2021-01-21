@@ -267,10 +267,6 @@ Values assigned can be contained in an array to assign them all at once:
 basicClass.$someDog.dog = ["Doberman", "Doberman", { age: 5 }];
 ```
 
-## Inline Dependency Injection
-
-Inline dependency injection can be done the same way as property injection.
-
 ## IOC Container Reference
 
 ### add

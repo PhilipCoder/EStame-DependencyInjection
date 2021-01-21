@@ -1,7 +1,7 @@
 {
   "name": "estame.di",
-  "version": "0.0.5",
-  "description": "A small but powerful dependency injection famework.",
+  "version": "0.0.6",
+  "description": "A small but powerful dependency injection framework.",
   "main": "iocContainer.js",
   "directories": {
     "test": "test"
@@ -32,7 +32,8 @@
     "/iocContainer.js",
     "/ProxyHandlers",
     "/state",
-    "/types"
+    "/types",
+    "/helpers"
   ],
   "dependencies": {
   },

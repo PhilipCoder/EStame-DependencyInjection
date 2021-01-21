@@ -17,14 +17,17 @@ const getParametersAssigned = (assignedArguments, constructorDefinition, paramet
 };
 
 
-function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments) {
+function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments, parentNamespace) {
     let parameters = null;
     if (methodDefinition) {
         parameters = [];
         for (let i = 0; i < methodDefinition.length; i++) {
             let parameterValue = undefined;
             if (typeof methodDefinition[i] === "string") {
-                parameterValue = iocContainerInstance.__get(methodDefinition[i], scopedRepo, parent);
+                let namespace = methodDefinition[i];
+                let fullNamespace = `${parentNamespace}/${namespace}`;
+                namespace = iocContainerInstance.exists(fullNamespace) ? fullNamespace : namespace;
+                parameterValue = iocContainerInstance.__get(namespace, scopedRepo, parent);
             } else if (args.length > i) {
                 parameterValue = args[i];
             } else if (methodDefinition[i] === parameterTypes.parent) {

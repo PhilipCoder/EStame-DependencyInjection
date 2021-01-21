@@ -9,7 +9,7 @@ class constructProxyHandler {
     constructor(iocType, namespace, scopedRepo, iocContainerInstance, parent, name, assignedArguments, forceNew) {
         this.construct = (target, args, newTarget) => {
             scopedRepo = forceNew ? {} : scopedRepo;
-            let parameters = getMethodParameters(target.$constructor, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments);
+            let parameters = getMethodParameters(target.$constructor, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments, namespace);
             delete this.construct;
             let proxyTarget = null;
             switch (iocType) {
