@@ -234,7 +234,6 @@ __Example, property assignment (named):__
 
 ```javascript
 container.add("basicClass", require("basicClass"));
-//
 container.add("basicClass/dog", require("dog"));
 
 const basicClass = new (container.get("basicClass"))();
@@ -265,6 +264,59 @@ Values assigned can be contained in an array to assign them all at once:
 ```javascript
 //Injecting by assigning values to property via an array
 basicClass.$someDog.dog = ["Doberman", "Doberman", { age: 5 }];
+```
+
+## Namespaces
+
+Namespaces are paths that indicate where classes can be injected to. Classes are registered on the IOC container with a namespace. There are two types of namespaces, global and targeted namespaces.
+
+### Global Namespaces
+
+Global namespaces are namespaces that can be injected on all classes. The most obvious difference between global and targeted namespaces is that global namespaces does not contain a target class in the namespace and targeted namespaces do. The target class indicated with forward slashes ("/").
+
+#### Global Namespace Examples:
+
+```javascript
+container.add("engine", require("engine"));
+container.add("piston", require("piston"));
+container.add("rod", require("rod"));
+```
+
+Global namespaces can be injected with a using the namespace on any class. It does not take the parent classes in consideration.
+
+#### Targeted Namespaces
+
+Targeted namespaces are registered for a specific layer and class in a class hierarchy. The dependency injection framework takes all the parent classes in consideration when injecting a targeted class. 
+
+Let's take an example:
+
+There is a engine class, the engine class has needs the piston class and the piston class needs the rod class. The namespaces of the three classes will be:
+
+```javascript
+container.add("engine", require("engine"));
+container.add("engine/piston", require("piston"));
+container.add("engine/piston/rod", require("rod"));
+```
+
+When registering the classes with their target parents, they can only be injected on those classes. The rod class can not be injected on the engine class and the piston class not on the rod class. The rod class can be injected on the piston class piston class though.
+
+When injecting targeted classes, the path of the class does not need to be in the name used to inject the class. In the example above, the "rod" class can be injected on the piston class by using only the name "rod". The path will be calculated by using the path of the parent class the rod class is injected to.
+
+A single class definition can be registered in the IOC container with more than one namespace. For example, if you want to use the piston class on the engine class and the block class:
+
+```javascript
+container.add("engine", require("engine"));
+container.add("engine/piston", require("piston"));
+container.add("engine/block/piston", require("piston"));
+```
+
+More than one class can also be registered with the same name as long as they have different namespaces. In this example the engineWire class instance will be injected on the engine class and the dashboardWire class will be injected on the dashboard class:
+
+```javascript
+container.add("engine", require("engine"));
+container.add("engine/wire", require("engineWire"));
+container.add("dashboard", require("dashboard"));
+container.add("dashboard/wire", require("dashboardWire"));
 ```
 
 ## IOC Container Reference
