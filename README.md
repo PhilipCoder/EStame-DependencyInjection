@@ -224,10 +224,10 @@ basicClass.dog = { age: 5 };
 basicClass.$dog.Doberman.John = { age: 5 };
 ```
 
-Values assigned can be contained in an array to assign them all at once:
+A global function ( _ ) is available to assign more than one value at once:
 ```javascript
-//Injecting by assigning values to property via an array
-basicClass.$dog = ["Doberman", "Doberman", { age: 5 }];
+//Injecting by assigning values to property via the assignment function
+basicClass.$dog = _("Doberman", "Doberman", { age: 5 });
 ```
 
 __Example, property assignment (named):__
@@ -262,8 +262,8 @@ basicClass.$someDog.dog.Doberman.John = { age: 5 };
 
 Values assigned can be contained in an array to assign them all at once:
 ```javascript
-//Injecting by assigning values to property via an array
-basicClass.$someDog.dog = ["Doberman", "Doberman", { age: 5 }];
+//Injecting by assigning values to property via the assignment function
+basicClass.$someDog.dog = _("Doberman", "Doberman", { age: 5 });
 ```
 
 ## Namespaces
@@ -446,6 +446,7 @@ __Parameter types:__
 | object | Defines an assignable object parameter. | Named and anonymous property injection |
 | function | Defines an assignable function parameter. | Named and anonymous property injection |
 | boolean | Defines an assignable boolean parameter. | Named and anonymous property injection |
+| array | Defines an assignable array parameter. | Named and anonymous property injection |
 | name | The name of a named injected property. | Named property injection |
 
 

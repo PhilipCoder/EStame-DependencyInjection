@@ -1,5 +1,6 @@
 const parameterTypes = require("../types/parameterTypes.js");
 const chainableProxy = require("./chainableProxy.js");
+const assignableGrouping = require("../helpers/assignableGrouping.js").assignableGrouping;
 
 class chainableProxyHandler {
     constructor(nameSpace, parent, property, iocContainer, scopedRepo) {
@@ -19,14 +20,16 @@ class chainableProxyHandler {
             number: 0,
             object: 0,
             function: 0,
-            boolean: 0
+            boolean: 0,
+            array: 0
         };
         this.assignedParameterTypeCount = {
             string: 0,
             number: 0,
             object: 0,
             function: 0,
-            boolean: 0
+            boolean: 0,
+            array:0
         };
         //anonymous assignable
         let anonymousNamespace = `${nameSpace}/${property}`;
@@ -100,8 +103,8 @@ class chainableProxyHandler {
             this.assignedParameters.push(property);
             this.updateAssignedValueCount(property);
         }
-        if (property === "__$someValue" && Array.isArray(value)) {
-            value.forEach(x => this.parent[this.name || this.property] = x);
+        if (property === "__$someValue" && value instanceof assignableGrouping) {
+            value.values.forEach(x => this.parent[this.name || this.property] = x);
         } else {
             this.assignedParameters.push(value);
             this.updateAssignedValueCount(value);
@@ -123,7 +126,7 @@ class chainableProxyHandler {
     }
 
     updateAssignedValueCount(value) {
-        let valueType = typeof value;
+        let valueType = Array.isArray(value) ? "array" : typeof value;
         if (this.assignedParameterTypeCount[valueType] !== undefined) {
             this.assignedParameterTypeCount[valueType]++;
         }
@@ -137,7 +140,10 @@ class chainableProxyHandler {
                     this.parameterTypeCount.string++;
                 } else if (parameterTypes.number === definition) {
                     this.parameterTypeCount.number++;
-                } else if (parameterTypes.object === definition) {
+                } else if(parameterTypes.array === definition){
+                    this.parameterTypeCount.array++;
+                }
+                else if (parameterTypes.object === definition) {
                     this.parameterTypeCount.object++;
                 } else if (parameterTypes.function === definition) {
                     this.parameterTypeCount.function++;
@@ -154,7 +160,8 @@ class chainableProxyHandler {
             this.assignedParameterTypeCount.number >= this.parameterTypeCount.number &&
             this.assignedParameterTypeCount.object >= this.parameterTypeCount.object &&
             this.assignedParameterTypeCount.function >= this.parameterTypeCount.function &&
-            this.assignedParameterTypeCount.boolean >= this.parameterTypeCount.boolean;
+            this.assignedParameterTypeCount.boolean >= this.parameterTypeCount.boolean &&
+            this.assignedParameterTypeCount.array >= this.parameterTypeCount.array;
     }
 
 

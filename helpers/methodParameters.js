@@ -11,7 +11,7 @@ const getAssignedArgumentIndex = (type, parameters, constructorDefinition) => {
 
 const getParametersAssigned = (assignedArguments, constructorDefinition, parameters) => {
     assignedArguments.forEach(assignedArgument => {
-        let parameterIndex = getAssignedArgumentIndex(typeof assignedArgument, parameters, constructorDefinition);
+        let parameterIndex = getAssignedArgumentIndex(Array.isArray(assignedArgument) ? "array" : typeof assignedArgument, parameters, constructorDefinition);
         parameters[parameterIndex] = assignedArgument;
     });
 };

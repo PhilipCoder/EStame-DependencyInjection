@@ -80,12 +80,15 @@ describe('assignable IOC', function () {
         assert(model.functionAssigned() === 10, "Wrong result value");
 
         iocInstance.model.$iocComplex.one.two = { value: 5 };
+        iocInstance.model.iocComplex = [8,9];
 
         let complexIOC = iocInstance.model.iocComplex;
 
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
+        assert(complexIOC.arrayAssigned[0] === 8, "Wrong result value");
+        assert(complexIOC.arrayAssigned[1] === 9, "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
         assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
@@ -118,10 +121,13 @@ describe('assignable IOC', function () {
         assert(model.functionAssigned() === 10, "Wrong result value");
 
         iocInstance.model.$iocComplex.one.two = { value: 5 };
+        iocInstance.model.iocComplex = [8,9];
 
         let complexIOC = iocInstance.model.iocComplex;
 
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
+        assert(complexIOC.arrayAssigned[0] === 8, "Wrong result value");
+        assert(complexIOC.arrayAssigned[1] === 9, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
@@ -144,13 +150,15 @@ describe('assignable IOC', function () {
         iocInstance.model.$iocComplex = "one";
         iocInstance.model.iocComplex = "two";
         iocInstance.model.iocComplex = { value: 5 };
-
+        iocInstance.model.iocComplex = [8,9];
 
         let complexIOC = iocInstance.model.iocComplex;
 
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
+        assert(complexIOC.arrayAssigned[0] === 8, "Wrong result value");
+        assert(complexIOC.arrayAssigned[1] === 9, "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
         assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
@@ -169,13 +177,15 @@ describe('assignable IOC', function () {
         let model = iocInstance.model;
         assert(model.functionAssigned() === 10, "Wrong result value");
 
-        iocInstance.model.$iocComplex = ["one", "two", { value: 5 }];
+        iocInstance.model.$iocComplex = _("one", "two", { value: 5 }, [8,9]);
 
         let complexIOC = iocInstance.model.iocComplex;
 
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
+        assert(complexIOC.arrayAssigned[0] === 8, "Wrong result value");
+        assert(complexIOC.arrayAssigned[1] === 9, "Wrong result value");
         assert(complexIOC.name === null, "Wrong result value");
         assert(complexIOC.parent === iocInstance.model, "Wrong result value");
         assert(complexIOC.basicClass.addValue(2, 1) === 3, "Wrong result value");
@@ -193,9 +203,12 @@ describe('assignable IOC', function () {
         assert(model.functionAssigned() === 10, "Wrong result value");
 
         iocInstance.model.$theName.iocComplex.one.two = { value: 5 };
+        iocInstance.model.theName = [8,9];
 
         let complexIOC = iocInstance.model.theName;
 
+        assert(complexIOC.arrayAssigned[0] === 8, "Wrong result value");
+        assert(complexIOC.arrayAssigned[1] === 9, "Wrong result value");
         assert(complexIOC.objectAssigned.value === 5, "Wrong result value");
         assert(complexIOC.stringAssignedA === "one", "Wrong result value");
         assert(complexIOC.stringAssignedB === "two", "Wrong result value");
