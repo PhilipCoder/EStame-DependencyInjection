@@ -259,7 +259,7 @@ basicClass.someDog = { age: 5 };
 basicClass.$someDog.dog.Doberman.John = { age: 5 };
 ```
 
-Values assigned can be contained in an array to assign them all at once:
+A global function "_" can be used to assign values inline and all at once:
 ```javascript
 //Injecting by assigning values to property via the assignment function
 basicClass.$someDog.dog = _("Doberman", "Doberman", { age: 5 });
