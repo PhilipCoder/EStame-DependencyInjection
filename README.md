@@ -40,9 +40,8 @@ iocContainer.Add("calculator", require("./calculator"));
 
 ```javascript
 //Getting the IOC ready class from the IOC container
-const calculatorConstructor = iocContainer.get("calculator");
+const calculator = iocContainer.get("calculator");
 //Creating an instance of the class
-const calculator = new calculatorConstructor();
 ```
 
 ## Constructor Descriptors
@@ -89,8 +88,7 @@ const iocContainer = new container();
 iocContainer.Add("calculator", require("./calculator"));
 iocContainer.Add("additionCalc", require("./additionCalc"));
 
-const calculatorClass = iocContainer.get("calculator");
-const calculator = new calculatorClass();
+const calculator = iocContainer.get("calculator");
 //Calling the method with 2 parameters. The third parameter is injected.
 let operationResult = calculator.getValue(2,6);
 ```
@@ -126,7 +124,7 @@ _Example:_
 container.add("basicClass", require("basicClass"));
 container.addAnonymous("basicClass/model", require("model"));
 
-const iocInstance = new (container.get("basicClass"))();
+const iocInstance = container.get("basicClass");
 iocInstance.$myModel.model; //the model class
 //the model instance will be available on the myModel property
 const modelInstance = icoInstance.myModel;
@@ -146,7 +144,7 @@ _Example:_
 container.add("basicClass", require("basicClass"));
 container.addAnonymous("basicClass/model", require("model"));
 
-const iocInstance = new (container.get("basicClass"))();
+const iocInstance = container.get("basicClass");
 iocInstance.$myModel.model; //the model class
 //the model instance will be available on the myModel property
 const modelInstance = icoInstance.myModel;
@@ -168,6 +166,7 @@ Available Types For Constructor Parameter Assignment:
 * object
 * function
 * boolean
+* array
 
 #### Constructor Definitions For Parameter Assignment
 
@@ -200,7 +199,7 @@ container.add("basicClass", require("basicClass"));
 //
 container.addAnonymous("basicClass/dog", require("dog"));
 
-const basicClass = new (container.get("basicClass"))();
+const basicClass = container.get("basicClass");
 ```
 
 To inject the class with the specified 2 string and one object argument as defined in the example above.
@@ -236,7 +235,7 @@ __Example, property assignment (named):__
 container.add("basicClass", require("basicClass"));
 container.add("basicClass/dog", require("dog"));
 
-const basicClass = new (container.get("basicClass"))();
+const basicClass = container.get("basicClass");
 ```
 
 To inject the class with the specified 2 string and one object argument as defined in the example above.
@@ -319,6 +318,10 @@ container.add("dashboard", require("dashboard"));
 container.add("dashboard/wire", require("dashboardWire"));
 ```
 
+## Dependency Collections
+
+When more than one dependency needs to be registered on a namespace, it can be registered in a dependency collection. When the values are injected, the class instances and/or values will be injected in an array to the constructor or method. To register dependencies in dependency collections, use the addToCollection, addScopedToCollection, addSingletonToCollection or addValueToCollection methods on the IOC container. _Please note that dependency collections can not be used via property injection_.
+
 ## IOC Container Reference
 
 ### add
@@ -339,6 +342,22 @@ Can be used to register classes for:
 * Method parameter injection
 * Property injection
 
+### addToCollection
+
+The addToCollection method can be used to register a class definition to a dependency collection. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered with the add method, a new instance will be injected every time the class is injected.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | class | The class definition to register in the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+
 ### addScoped
 
 The addScoped method can be used to register a class definition in a scoped context. The object registered must have a constructor available since the framework will create a new instance when injected.
@@ -355,9 +374,41 @@ Can be used to register classes for:
 * Constructor parameter injection
 * Method parameter injection
 
+### addScopedToCollection
+
+The addScopedToCollection method can be used to register a class definition in a scoped context to a dependency collection. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered with the addScopedToCollection method, a new instance will be created for every time a class is manually constructed from the get method of the IOC container. When a class is created from the IOC container, all classes referenced by the class will receive the same instance, but when a new class is constructed from the container, a new instance will be injected for the new class.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | class | The class definition to register in the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+
 ### addSingleton
 
 The addScoped method can be used to register a class definition as a singleton. The object registered must have a constructor available since the framework will create a new instance when injected.
+
+> When a class is registered as a singleton, a new instance will be created the first time it is injected, and after that the same instance will be injected every time the class is injected.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| classDefinition | class | The class definition to register in the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+
+### addSingletonToCollection
+
+The addSingletonToCollection method can be used to register a class definition as a singleton to a dependency collection. The object registered must have a constructor available since the framework will create a new instance when injected.
 
 > When a class is registered as a singleton, a new instance will be created the first time it is injected, and after that the same instance will be injected every time the class is injected.
 
@@ -402,6 +453,20 @@ Can be used to register classes for:
 * Method parameter injection
 * Property injection
 
+### addValueToCollection
+
+The addValueToCollection method can be used to register an object or value to a dependency collection that will be injected without the constructor being called. When used with property injection, objects registered with addValue will require a name.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| value | any | The object to register into the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+
 ### addAnonymousValue
 
 The addAnonymousValue method can be used to register an object or value that will be injected without the constructor being called. When used with property injection, objects registered with addAnonymousValue will not require a name.
@@ -417,7 +482,7 @@ Can be used to register classes for:
 
 ### get
 
-Dependency injection ready classes can be retrieved via the get method. This is the method to be used after a class is registered in the IOC container. Please note that this not a class instance, the constructor on the result of the get method should be used to get an instance of the class.
+Dependency injection registered classes or values can be retrieved via the get method. The get method will return an instance of the class if a class definition is retrieved and a value if a value is registered. If a collection of dependencies is registered, an array of the class instances and/or values will be returned.
 
 | Parameter Name | Type | Description |
 | -------------- | ------- | ----------- |

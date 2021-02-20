@@ -21,7 +21,7 @@ describe('factory tests', function () {
         require('module-alias/register')
         const container = new iocContainer([serverFactory]);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$first.model = (value) => five * 2;
         let model = iocInstance.first;

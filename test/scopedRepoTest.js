@@ -14,8 +14,7 @@ describe('scoped repo', function () {
         container.add("me", me);
         container.addScoped("scopedGene", scopedGene);
 
-        let grantParentClassDefinition = container.get("grandParent");
-        let grantParentClassInstance = new grantParentClassDefinition();
+        let grantParentClassInstance = container.get("grandParent");
         assert(grantParentClassInstance.parentA.instance !== grantParentClassInstance.parentB.instance, "Instance error" );
         assert(grantParentClassInstance.parentA.me.instance !== grantParentClassInstance.parentB.me.instance, "Instance error" );
 
@@ -24,7 +23,7 @@ describe('scoped repo', function () {
         assert(grantParentClassInstance.parentA.scopedGene.instance === grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error" );
         assert(grantParentClassInstance.parentB.scopedGene.instance === grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
 
-        let grantParentClassInstanceB = new grantParentClassDefinition();
+        let grantParentClassInstanceB  = container.get("grandParent");
         assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentB.scopedGene.instance, "Instance error" );
         assert(grantParentClassInstanceB.parentA.me.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
         assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error" );

@@ -24,7 +24,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addAnonymous("basicClass/model", modelAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -36,7 +36,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.add("basicClass/model", modelAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$first.model = (value) => five * 2;
         let model = iocInstance.first;
@@ -48,7 +48,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addAnonymous("basicClass/model", modelAssignable, true);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -60,7 +60,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.add("basicClass/model", modelAssignable, true);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$first.model = (value) => five * 2;
         let model = iocInstance.first;
@@ -73,7 +73,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.addAnonymous("basicClass/model/iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -100,7 +100,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.addAnonymous("basicClass/iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -114,7 +114,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.addAnonymous("iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -141,7 +141,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.addAnonymous("basicClass/model/iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -171,7 +171,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.addAnonymous("basicClass/model/iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -196,7 +196,7 @@ describe('assignable IOC', function () {
         container.addAnonymous("basicClass/model", modelAssignable);
         container.add("basicClass/model/iocComplex", iocAssignable);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         const five = 5;
         iocInstance.$model = (value) => five * 2;
         let model = iocInstance.model;
@@ -222,7 +222,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addAnonymousValue("basicClass/value", { value: 4 });
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         iocInstance.$value
         let result = iocInstance.value;
         assert(result.value === 4, "Wrong result value");
@@ -233,7 +233,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addValue("basicClass/value", { value: 4 });
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         iocInstance.$myValue.value
         let result = iocInstance.myValue;
         assert(result.value === 4, "Wrong result value");
@@ -244,7 +244,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.add("basicClass/value", basicClass);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         iocInstance.$child.value
         let result = iocInstance.child;
         assert(result.addValue(3, 1) === 4, "Wrong result value");
@@ -255,7 +255,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addAnonymous("basicClass/value", basicClass);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         iocInstance.$value
         let result = iocInstance.value;
         assert(result.addValue(3, 1) === 4, "Wrong result value");
@@ -266,7 +266,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.add("basicClass/value", basicClass, true);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         let result = iocInstance.$one.value
         assert(result.addValue(3, 1) === 4, "Wrong result value");
         assert(iocInstance.one === undefined, "Detached should be undefined");
@@ -277,7 +277,7 @@ describe('assignable IOC', function () {
         container.add("basicClass", basicClass);
         container.addAnonymous("basicClass/value", basicClass, true);
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         let result = iocInstance.$value
         assert(result.addValue(3, 1) === 4, "Wrong result value");
         assert(iocInstance.value === undefined, "Detached should be undefined");
@@ -287,7 +287,7 @@ describe('assignable IOC', function () {
         const container = new iocContainer();
         container.add("basicClass", require("./classes/methodInjection.js"));
 
-        const iocInstance = new (container.get("basicClass"))();
+        const iocInstance = container.get("basicClass");
         let result = iocInstance.addValue(3, 1);
         assert(result.value === 4, "Wrong result value");
         assert(typeof result.container.add === "function", "Container not injected");

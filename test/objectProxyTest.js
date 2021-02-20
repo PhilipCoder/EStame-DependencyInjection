@@ -6,15 +6,15 @@ const additionCalc = require("./classes/additionCalc.js");
 const invoiceGenerator = require("./classes/invoiceGenerator.js");
 const invoiceLogic = require("./classes/invoiceLogic.js");
 const invoiceDAL = require("./classes/invoiceDAL.js");
-
+const parent = require("./collectionInjection/parent.js");
+const child = require("./collectionInjection/child.js");
 
 describe('objectProxy', function () {
-    it("basic constructor",function () {
+    it("basic constructor", function () {
         const container = new iocContainer();
         container.add("basicClass", basicClass);
 
-        let basicClassDefinition = container.get("basicClass");
-        let basicClassInstance = new basicClassDefinition();
+        let basicClassInstance = container.get("basicClass");
         let addition = basicClassInstance.addValue(5, 4);
         assert(addition === 9, "Incorrect value returned.");
     });
@@ -24,9 +24,7 @@ describe('objectProxy', function () {
         container.add("calculator", calculator);
         container.add("additionCalc", additionCalc);
 
-
-        let calculatorClassDefinition = container.get("calculator");
-        let calculatorInstance = new calculatorClassDefinition();
+        let calculatorInstance = container.get("calculator");
         let addition = calculatorInstance.getValue(5, 4);
         let additionB = calculatorInstance.getValue(8, 4);
 
@@ -42,8 +40,7 @@ describe('objectProxy', function () {
         container.add("invoiceDAL", invoiceDAL);
         container.addValue("accountName", "Doe");
 
-        let invoiceGeneratorClassDefinition = container.get("invoiceGenerator",["Jan",20]);
-        let generatorInstance = new invoiceGeneratorClassDefinition();
+        let generatorInstance = container.get("invoiceGenerator", ["Jan", 20]);
         let invoice = generatorInstance.generateInvoice(500, "The Name");
         let invoiceB = generatorInstance.generateInvoice(5000, "The NameB");
         assert(generatorInstance.stringValue === "Jan", "Parameter value not assigned");
@@ -65,8 +62,7 @@ describe('objectProxy', function () {
         container.add("server/controller", require("./classesInheritedNamespace/controller.js"));
         container.add("server/controller/action", require("./classesInheritedNamespace/action.js"));
 
-        let serverDefinition = container.get("server");
-        let serverInstance =  new serverDefinition();
+        let serverInstance = container.get("server");
         let action = serverInstance.controller.getAction();
         assert(serverInstance.name === "server", "Server wrongly assigned");
         assert(serverInstance.controller.name === "controller", "Controller wrongly assigned");
@@ -75,5 +71,24 @@ describe('objectProxy', function () {
 
     });
 
+    it("collection injection", function () {
+        const container = new iocContainer();
+        container.add("parent", parent);
+        container.addToCollection("children", child);
+        container.addValueToCollection("children", { name: "childA" });
+        container.addValue("someValue", { name: "This is a value" });
+
+        container.addValueToCollection("someValues", { name: "ValueA" });
+        container.addValueToCollection("someValues", { name: "ValueB" });
+
+        let parentInstance = container.get("parent");
+        assert(parentInstance.children.length === 2, "Children not injected");
+        assert(parentInstance.children[0].descriptor === "child", "Wrong value injected");
+        assert(parentInstance.children[1].name === "childA", "Wrong value injected");
+        assert(parentInstance.children[0].someValues.length === 2, "Wrong value injected");
+        assert(parentInstance.children[0].someValues[0].name === "ValueA", "Wrong value injected");
+        assert(parentInstance.children[0].someValues[1].name === "ValueB", "Wrong value injected");
+
+    });
 
 });

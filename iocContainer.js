@@ -1,26 +1,6 @@
-const constructProxyHandler = require("./ProxyHandlers/constructProxyHandler.js");
+const iocContainerModuleLoading = require("./helpers/iocContainerModuleLoading.js");
+const iocContainerValidations = require("./helpers/iocContainerValidations");
 const iocTypes = require("./types/ioc.js");
-const parameterTypes = require("./types/parameterTypes.js");
-const _ = require("./helpers/methodParameters.js");
-
-const validateIOCClassValues = (nameSpace, classDefinition, iocContainer) => {
-    if (typeof nameSpace !== "string") throw 'The namespace of an IOC entity has to be a string.';
-    if (nameSpace.trim().length === 0) throw 'Please provide a namespace in order to register IOC entity.';
-    if (typeof classDefinition !== "function") throw 'An IOC entity has to be a class or function.';
-    if (iocContainer[nameSpace]) throw `Namespace ${nameSpace} is already registered.`;
-};
-
-const validateIOCValues = (nameSpace, iocContainer) => {
-    if (typeof nameSpace !== "string") throw 'The namespace of an IOC entity has to be a string.';
-    if (nameSpace.trim().length === 0) throw 'Please provide a namespace in order to register IOC entity.';
-    if (iocContainer[nameSpace]) throw `Namespace ${nameSpace} is already registered.`;
-};
-
-const loadFactories = (nameSpace, containerInstance) => {
-    for (let index = 0; index < containerInstance.factories.length; index++) {
-        containerInstance.factories[index](nameSpace, containerInstance);
-    }
-};
 
 /**
  * The IOC container is an object containing the classes and the names they are bound to. 
@@ -35,12 +15,23 @@ class iocContainer {
     }
 
     /**
+  * The add method can be used to register a class definition. The object registered must have a constructor available since the framework will create a new instance when injected.
+  * @param {string} nameSpace The name of the class or the namespace of the class.
+  * @param {any} classDefinition The class definition to register in the IOC container
+  * @param {boolean} detached When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected.
+  */
+    add(nameSpace, classDefinition, detached = false) {
+        iocContainerValidations.validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
+        this.iocEntities[nameSpace] = { classDefinition: classDefinition, type: iocTypes.instanced, detached };
+    }
+
+    /**
      * The addScoped method can be used to register a class definition in a scoped context. The object registered must have a constructor available since the framework will create a new instance when injected.
      * @param {string} nameSpace The name of the class or the namespace of the class.
      * @param {any} classDefinition The class definition to register in the IOC container
      */
     addScoped(nameSpace, classDefinition) {
-        validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
+        iocContainerValidations.validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
         this.iocEntities[nameSpace] = { classDefinition: classDefinition, type: iocTypes.scoped };
     }
 
@@ -50,7 +41,7 @@ class iocContainer {
      * @param {any} classDefinition The class definition to register in the IOC container
      */
     addSingleton(nameSpace, classDefinition) {
-        validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
+        iocContainerValidations.validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
         this.iocEntities[nameSpace] = { classDefinition: classDefinition, type: iocTypes.singleton };
     }
 
@@ -60,19 +51,8 @@ class iocContainer {
      * @param {any} value The object to register into the IOC container
      */
     addValue(nameSpace, value) {
-        validateIOCValues(nameSpace, this.iocEntities);
+        iocContainerValidations.validateIOCValues(nameSpace, this.iocEntities);
         this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, isValue: true };
-    }
-
-    /**
-     * The add method can be used to register a class definition. The object registered must have a constructor available since the framework will create a new instance when injected.
-     * @param {string} nameSpace The name of the class or the namespace of the class.
-     * @param {any} classDefinition The class definition to register in the IOC container
-     * @param {boolean} detached When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected.
-     */
-    add(nameSpace, classDefinition, detached = false) {
-        validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
-        this.iocEntities[nameSpace] = { classDefinition: classDefinition, type: iocTypes.instanced, detached };
     }
 
     /**
@@ -82,7 +62,7 @@ class iocContainer {
      * @param {boolean} detached When set to true and the class is injected to a property, no instance will be applied to the parent class. The property will be undefined after it is injected.
      */
     addAnonymous(nameSpace, classDefinition, detached = false) {
-        validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
+        iocContainerValidations.validateIOCClassValues(nameSpace, classDefinition, this.iocEntities);
         this.iocEntities[nameSpace] = { classDefinition: classDefinition, type: iocTypes.instanced, anonymous: true, detached };
     }
 
@@ -92,8 +72,48 @@ class iocContainer {
      * @param {any} value The object to register into the IOC container
      */
     addAnonymousValue(nameSpace, value) {
-        validateIOCValues(nameSpace, value, this.iocEntities);
+        iocContainerValidations.validateIOCValues(nameSpace, value, this.iocEntities);
         this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, anonymous: true, isValue: true };
+    }
+
+    /**
+     * The addToCollection method can be used to register a class definition in a collection for a namespace. The object registered must have a constructor available since the framework will create a new instance when injected.
+     * @param {string} nameSpace 
+     * @param {any} classDefinition 
+     */
+    addToCollection(nameSpace, classDefinition) {
+        iocContainerValidations.validateIOCClassContainerValues(nameSpace, classDefinition, this.iocEntities);
+        this.iocEntities[nameSpace].push({ classDefinition: classDefinition, type: iocTypes.instanced });
+    }
+
+    /**
+    * The addScopedToCollection method can be used to register a class definition to a collection in a scoped context. The object registered must have a constructor available since the framework will create a new instance when injected.
+    * @param {string} nameSpace The name of the class or the namespace of the class.
+    * @param {any} classDefinition The class definition to register in the IOC container
+    */
+    addScopedToCollection(nameSpace, classDefinition) {
+        iocContainerValidations.validateIOCClassContainerValues(nameSpace, classDefinition, this.iocEntities);
+        this.iocEntities[nameSpace].push({ classDefinition: classDefinition, type: iocTypes.scoped });
+    }
+
+    /**
+     * The addSingleton method can be used to register a class definition as a singleton to a collection. The object registered must have a constructor available since the framework will create a new instance when injected.
+     * @param {string} nameSpace The name of the class or the namespace of the class.
+     * @param {any} classDefinition The class definition to register in the IOC container
+     */
+    addSingletonToCollection(nameSpace, classDefinition) {
+        iocContainerValidations.validateIOCClassContainerValues(nameSpace, classDefinition, this.iocEntities);
+        this.iocEntities[nameSpace].push({ classDefinition: classDefinition, type: iocTypes.singleton });
+    }
+
+    /**
+     * The addValueToCollection method can be used to register an object or value that will be injected without the constructor being called. When used with property injection, objects registered with addValue will require a name.
+     * @param {string} nameSpace The name of the class or the namespace of the class.
+     * @param {any} value The object to register into the IOC container
+     */
+    addValueToCollection(nameSpace, value) {
+        iocContainerValidations.validateIOCCollectionValues(nameSpace, this.iocEntities);
+        this.iocEntities[nameSpace].push({ value: value, type: iocTypes.instanced, isValue: true });
     }
 
     /**
@@ -102,7 +122,7 @@ class iocContainer {
      */
     get(nameSpace, parameters) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return new Proxy(this.iocEntities[nameSpace].classDefinition, new constructProxyHandler(this.iocEntities[nameSpace].type, nameSpace, {}, this, undefined, undefined, parameters, true));
+        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, {}, undefined, undefined, parameters, true)
     }
 
     /**
@@ -110,7 +130,7 @@ class iocContainer {
      * @param {string} nameSpace The name of the class or the namespace of the class.
      */
     exists(nameSpace) {
-        if (!this.iocEntities[nameSpace]) loadFactories(nameSpace, this);
+        if (!this.iocEntities[nameSpace]) iocContainerModuleLoading.loadFactories(nameSpace, this);
         return !!this.iocEntities[nameSpace];
     }
 
@@ -119,7 +139,7 @@ class iocContainer {
      */
     __new(nameSpace, scopedRepo, parent, name, assignedArguments) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return new Proxy(this.iocEntities[nameSpace].classDefinition, new constructProxyHandler(this.iocEntities[nameSpace].type, nameSpace, scopedRepo, this, parent, name, assignedArguments));
+        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, scopedRepo, parent, name, assignedArguments);
     }
 
     /**
@@ -127,12 +147,8 @@ class iocContainer {
      */
     __get(nameSpace, scopedRepo, parent, name, assignedArguments) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        if (this.iocEntities[nameSpace].value) {
-            return this.iocEntities[nameSpace].value;
-        } else {
-            return new (this.__new(nameSpace, scopedRepo, parent, name, assignedArguments))();
-        }
+        return this.__new(nameSpace, scopedRepo, parent, name, assignedArguments);
     }
 }
 
-module.exports = { container: iocContainer, types: parameterTypes };
+module.exports = { container: iocContainer, types: require("./types/parameterTypes.js") };

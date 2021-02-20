@@ -52,8 +52,8 @@ class chainableProxyHandler {
     }
 
     completeAssignment() {
-        let resultConstructor = this.iocContainer.__new(this.nameSpace, this.scopedRepo, this.parent, this.name, this.assignedParameters);
-        let result = new resultConstructor();
+        let result = this.iocContainer.__new(this.nameSpace, this.scopedRepo, this.parent, this.name, this.assignedParameters);
+        //let result = new resultConstructor();
         this.parent._target[this.name || this.property] =result;
         if (this.iocContainer.iocEntities[this.nameSpace].detached) {
             delete this.parent._target[this.name || this.property];
