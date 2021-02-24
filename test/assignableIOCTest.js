@@ -11,7 +11,7 @@ describe('assignable IOC', function () {
         container.add("iocAssignable", iocAssignable);
 
         let parent = Symbol("parent");
-        const iocInstance = container.__get("iocAssignable", {}, parent, "someIOC", [{ value: 2 }, "valueA", "valueB"]);
+        const iocInstance = container.__get("iocAssignable", parent, "someIOC", [{ value: 2 }, "valueA", "valueB"]);
         assert(iocInstance.name === "someIOC", "Wrong name");
         assert(iocInstance.objectAssigned.value === 2, "Wrong object");
         assert(iocInstance.parent === parent, "Wrong parent");

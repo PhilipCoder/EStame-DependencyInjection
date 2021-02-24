@@ -27,7 +27,7 @@ function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo,
                 let namespace = methodDefinition[i];
                 let fullNamespace = `${parentNamespace}/${namespace}`;
                 namespace = iocContainerInstance.exists(fullNamespace) ? fullNamespace : namespace;
-                parameterValue = iocContainerInstance.__get(namespace, scopedRepo, parent);
+                parameterValue = iocContainerInstance.__get(namespace, parent);
             } else if (args.length > i) {
                 parameterValue = args[i];
             } else if (methodDefinition[i] === parameterTypes.parent) {
@@ -35,7 +35,7 @@ function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo,
             } else if (methodDefinition[i] === parameterTypes.name) {
                 parameterValue = name;
             } else if (methodDefinition[i] === parameterTypes.container) {
-                parameterValue = iocContainerInstance;
+                parameterValue = iocContainerInstance._new(scopedRepo);
             }
             parameters.push(parameterValue);
         }

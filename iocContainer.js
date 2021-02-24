@@ -11,6 +11,7 @@ class iocContainer {
          * Object containing
          */
         this.iocEntities = {};
+        this.scopedIOCEntities = {};
         this.factories = factories || [];
     }
 
@@ -53,6 +54,16 @@ class iocContainer {
     addValue(nameSpace, value) {
         iocContainerValidations.validateIOCValues(nameSpace, this.iocEntities);
         this.iocEntities[nameSpace] = { value: value, type: iocTypes.instanced, isValue: true };
+    }
+
+     /**
+     * The addValue method can be used to register an object or value that will be injected without the constructor being called. This value will only be available in the same scope. When used with property injection, objects registered with addValue will require a name.
+     * @param {string} nameSpace The name of the class or the namespace of the class.
+     * @param {any} value The object to register into the IOC container
+     */
+    addValueScoped(nameSpace, value) {
+        iocContainerValidations.validateIOCValues(nameSpace, this.iocEntities);
+        this.iocEntities[nameSpace] = value;
     }
 
     /**
@@ -122,7 +133,8 @@ class iocContainer {
      */
     get(nameSpace, parameters) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, {}, undefined, undefined, parameters, true)
+        const newScope = {};
+        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this._new(newScope), nameSpace, newScope, undefined, undefined, parameters, true)
     }
 
     /**
@@ -135,19 +147,31 @@ class iocContainer {
     }
 
     /**
+     * Internal factory method
      * @private
      */
-    __new(nameSpace, scopedRepo, parent, name, assignedArguments) {
-        if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, scopedRepo, parent, name, assignedArguments);
+    _new(scopedRepo) {
+        const result = new iocContainer();
+        result.factories = this.factories;
+        result.iocEntities = this.iocEntities;
+        this.scopedIOCEntities = scopedRepo;
+        return result;
     }
 
     /**
      * @private
      */
-    __get(nameSpace, scopedRepo, parent, name, assignedArguments) {
+    __new(nameSpace, /*scopedRepo,*/ parent, name, assignedArguments) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return this.__new(nameSpace, scopedRepo, parent, name, assignedArguments);
+        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, this.scopedIOCEntities, parent, name, assignedArguments);
+    }
+
+    /**
+     * @private
+     */
+    __get(nameSpace, /*scopedRepo,*/ parent, name, assignedArguments) {
+        if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
+        return this.__new(nameSpace, parent, name, assignedArguments);
     }
 }
 

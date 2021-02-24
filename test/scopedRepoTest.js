@@ -24,10 +24,10 @@ describe('scoped repo', function () {
         assert(grantParentClassInstance.parentB.scopedGene.instance === grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
 
         let grantParentClassInstanceB  = container.get("grandParent");
-        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentB.scopedGene.instance, "Instance error" );
-        assert(grantParentClassInstanceB.parentA.me.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
-        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error" );
-        assert(grantParentClassInstanceB.parentB.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error" );
+        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentB.scopedGene.instance, "Instance error, should not be the same instance" );
+        assert(grantParentClassInstanceB.parentA.me.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error, should not be the same instance" );
+        assert(grantParentClassInstanceB.parentA.scopedGene.instance !== grantParentClassInstance.parentA.me.scopedGene.instance, "Instance error, should not be the same instance" );
+        assert(grantParentClassInstanceB.parentB.scopedGene.instance !== grantParentClassInstance.parentB.me.scopedGene.instance, "Instance error, should not be the same instance" );
     });
 
 

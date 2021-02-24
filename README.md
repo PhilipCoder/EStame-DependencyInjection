@@ -453,6 +453,21 @@ Can be used to register classes for:
 * Method parameter injection
 * Property injection
 
+### addValueScoped
+
+The addValueScoped method can be used to register an object or value in a scoped context that will be injected without the constructor being called. When used with property injection, objects registered with addValueScoped will require a name.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class. |
+| value | any | The object to register into the IOC container |
+
+Can be used to register classes for:
+
+* Constructor parameter injection
+* Method parameter injection
+* Property injection
+
 ### addValueToCollection
 
 The addValueToCollection method can be used to register an object or value to a dependency collection that will be injected without the constructor being called. When used with property injection, objects registered with addValue will require a name.
