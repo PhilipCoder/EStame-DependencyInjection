@@ -63,7 +63,7 @@ class iocContainer {
      */
     addValueScoped(nameSpace, value) {
         iocContainerValidations.validateIOCValues(nameSpace, this.iocEntities);
-        this.iocEntities[nameSpace] = value;
+        this.scopedIOCEntities[nameSpace] = value;
     }
 
     /**
@@ -135,6 +135,32 @@ class iocContainer {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
         const newScope = {};
         return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this._new(newScope), nameSpace, newScope, undefined, undefined, parameters, true)
+    }
+
+    /**
+     * Removes a registered namespace.
+     * @param {string} namespace  The name of the class or the namespace of the class to remove.
+     */
+    delete(namespace){
+        delete this.scopedIOCEntities[namespace];
+        delete this.iocEntities[namespace];
+    }
+
+    /**
+     * Replaces a namespace registration entry keeping the scope configuration. Can be class or value.
+     * @param {string} namespace The name of the class or the namespace of the class to replace.
+     * @param {any} value The value to replace the namespace with.
+     */
+    replace(namespace, value){
+        if (this.scopedIOCEntities[namespace] && this.scopedIOCEntities[namespace].isValue) {
+            this.scopedIOCEntities[namespace].value = value;
+        }
+        if (this.scopedIOCEntities[namespace] && !this.scopedIOCEntities[namespace].isValue) {
+            this.scopedIOCEntities[namespace].classDefinition = value;
+        }
+        if (this.scopedIOCEntities[namespace]){
+            this.scopedIOCEntities[namespace] = value;
+        }
     }
 
     /**

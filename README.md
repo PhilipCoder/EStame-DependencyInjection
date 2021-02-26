@@ -503,6 +503,23 @@ Dependency injection registered classes or values can be retrieved via the get m
 | -------------- | ------- | ----------- |
 | nameSpace | string | The name of the class or the namespace of the class. |
 
+### delete
+
+Removes a registered namespace.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class to remove. |
+
+### replace
+
+ Replaces a namespace registration entry keeping the scope configuration. Can be class or value.
+
+| Parameter Name | Type | Description |
+| -------------- | ------- | ----------- |
+| nameSpace | string | The name of the class or the namespace of the class to replace. |
+| value | any | The value to replace the namespace with. |
+
 ### exists
 
 Runs IOC container factories and checks if a class is registered in the IOC container.

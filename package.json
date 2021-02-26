@@ -1,6 +1,6 @@
 {
   "name": "estame.di",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A small but powerful dependency injection framework.",
   "main": "iocContainer.js",
   "directories": {
