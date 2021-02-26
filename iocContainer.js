@@ -134,7 +134,7 @@ class iocContainer {
     get(nameSpace, parameters) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
         const newScope = {};
-        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this._new(newScope), nameSpace, newScope, undefined, undefined, parameters, true)
+        return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this._new(newScope), nameSpace, newScope, undefined, undefined, parameters, false)
     }
 
     /**
@@ -168,6 +168,7 @@ class iocContainer {
      * @param {string} nameSpace The name of the class or the namespace of the class.
      */
     exists(nameSpace) {
+        if (this.scopedIOCEntities[nameSpace]) return true;
         if (!this.iocEntities[nameSpace]) iocContainerModuleLoading.loadFactories(nameSpace, this);
         return !!this.iocEntities[nameSpace];
     }
@@ -180,7 +181,7 @@ class iocContainer {
         const result = new iocContainer();
         result.factories = this.factories;
         result.iocEntities = this.iocEntities;
-        this.scopedIOCEntities = scopedRepo;
+        result.scopedIOCEntities = scopedRepo;
         return result;
     }
 
@@ -197,7 +198,7 @@ class iocContainer {
      */
     __get(nameSpace, /*scopedRepo,*/ parent, name, assignedArguments) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
-        return this.__new(nameSpace, parent, name, assignedArguments);
+        return this.scopedIOCEntities[nameSpace] || this.__new(nameSpace, parent, name, assignedArguments);
     }
 }
 

@@ -55,7 +55,7 @@ class classProxyHandler {
 
     registerMethod(property,target,definition){
         if (!Array.isArray(definition)) return false;
-        this.methodProxies[property] = new Proxy(target[property], new methodHandler(definition, Object.assign({},this.scopedRepo), this.iocContainerInstance));
+        this.methodProxies[property] = new Proxy(target[property], new methodHandler(definition, this.scopedRepo, this.iocContainerInstance));
         return true;
     }
 }
