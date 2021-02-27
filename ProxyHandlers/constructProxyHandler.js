@@ -9,7 +9,9 @@ class constructProxyHandler {
     constructor(iocType, namespace, scopedRepo, iocContainerInstance, parent, name, assignedArguments, forceNew) {
         this.construct = (target, args, newTarget) => {
             scopedRepo = forceNew ? {} : scopedRepo;
-            let parameters = getMethodParameters(target.$constructor, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments, namespace);
+            let parametersResult = getMethodParameters(target.$constructor, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments, namespace);
+            this.events = parametersResult.events || {};
+            let parameters = parametersResult.parameters;
             delete this.construct;
             let proxyTarget = null;
             switch (iocType) {
@@ -30,8 +32,13 @@ class constructProxyHandler {
 
             let result = new Proxy(proxyTarget, new classProxyHandler(scopedRepo, iocContainerInstance, namespace, parent));
             this.construct = this._construct;
+            result.___handleConstructEvent = (proxy, events)=>{
+                this.events.construct && this.events.construct(proxy);
+                return proxy;
+            }
             return result;
         }
+        
         this._construct = this.construct;
     }
 }

@@ -19,8 +19,10 @@ const getParametersAssigned = (assignedArguments, constructorDefinition, paramet
 
 function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo, parent, args, name, assignedArguments, parentNamespace) {
     let parameters = null;
+    let result = {};
     if (methodDefinition) {
         parameters = [];
+        result.parameters = parameters;
         for (let i = 0; i < methodDefinition.length; i++) {
             let parameterValue = undefined;
             if (typeof methodDefinition[i] === "string") {
@@ -36,15 +38,18 @@ function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo,
                 parameterValue = name;
             } else if (methodDefinition[i] === parameterTypes.container) {
                 parameterValue = iocContainerInstance._new(scopedRepo);
+            } else if (methodDefinition[i] === parameterTypes.events){
+                parameterValue = {};
+                result.events = parameterValue;
             }
             parameters.push(parameterValue);
         }
         if (assignedArguments)
             getParametersAssigned(assignedArguments, methodDefinition, parameters);
     } else {
-        parameters = args;
+        result.parameters = args;
     }
-    return parameters;
+    return result;
 }
 
 module.exports = getMethodParameters;

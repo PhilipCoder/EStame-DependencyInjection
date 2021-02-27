@@ -7,7 +7,8 @@ const parameterTypes = {
     object: Symbol("object"),
     function: Symbol("function"),
     boolean: Symbol("boolean"),
-    array: Symbol("array")
+    array: Symbol("array"),
+    events: Symbol("events")
 };
 
 module.exports = parameterTypes;

@@ -8,7 +8,7 @@ class methodHandler {
     }
 
     apply(target, that, args) {
-        let parameters = getMethodParameters(this.methodDefinition, this.iocContainerInstance,this.scopedRepo,null,Array.from(args),null, null,that.__namespace)
+        let parameters = getMethodParameters(this.methodDefinition, this.iocContainerInstance,this.scopedRepo,null,Array.from(args),null, null,that.__namespace).parameters;
 
         return target.bind(that, ...parameters)();
     }

@@ -190,6 +190,7 @@ class iocContainer {
      */
     __new(nameSpace, /*scopedRepo,*/ parent, name, assignedArguments) {
         if (!this.exists(nameSpace)) throw `Namespace ${nameSpace} is not registered.`;
+        if (this.iocEntities[nameSpace].isValue) return this.iocEntities[nameSpace].value;
         return iocContainerModuleLoading.constructorInjectableFactory(this.iocEntities[nameSpace], this, nameSpace, this.scopedIOCEntities, parent, name, assignedArguments);
     }
 
