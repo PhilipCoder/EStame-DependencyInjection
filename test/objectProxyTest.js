@@ -91,4 +91,19 @@ describe('objectProxy', function () {
 
     });
 
+    it("method interception", function () {
+        const container = new iocContainer();
+        container.add("server", require("./methodInterception/server.js"));
+        container.add("serverResponse", require("./methodInterception/serverResponse.js"));
+        container.add("authentication", require("./methodInterception/authenticationInterceptor.js"));
+        container.addValue("settings", { name: "JohnDoe" });
+
+        let serverInstance = container.get("server");
+        assert(serverInstance.settings.name === "JohnDoe", "Settings not injected correctly");
+        let methodResultIntercepted = serverInstance.runRequest({ id: 1 });
+        assert(methodResultIntercepted === "Hello one", "Method not intercepted correctly");
+        let methodResult =  serverInstance.runRequest({ name: "Toyota" });
+        assert(methodResult === JSON.stringify({ name: "Toyota" }), "Method not intercepted correctly");
+    });
+
 });

@@ -15,14 +15,14 @@ class classProxyHandler {
     set(target, property, value, proxy) { //only anonymous
         if (target[property] === undefined && property.startsWith("$")) {
             let propertyName = property.substring(1);
-            target[propertyName] = chainableProxyHandler.new(this.namespace, proxy, propertyName, this.iocContainerInstance,  this.scopedRepo); //$element.$model = () => model.one; $element.$color.style = () => model.two
+            target[propertyName] = chainableProxyHandler.new(this.namespace, proxy, propertyName, this.iocContainerInstance, this.scopedRepo); //$element.$model = () => model.one; $element.$color.style = () => model.two
             target[propertyName].__$someValue = value;
-        } else if (target[property] instanceof chainableProxy && property.startsWith("$")){
+        } else if (target[property] instanceof chainableProxy && property.startsWith("$")) {
             let propertyName = property.substring(1);
             target[propertyName].__$someValue = value;
-        }else if (target[property] instanceof chainableProxy){
+        } else if (target[property] instanceof chainableProxy) {
             target[property].__$someValue = value;
-        }else {
+        } else {
             target[property] = value;
         }
         return true;
@@ -34,28 +34,28 @@ class classProxyHandler {
             return this.scopedRepo;
         } else if (property === "__namespace") {
             return this.namespace;
-        } else if (property ==="_target"){
+        } else if (property === "_target") {
             return target;
-        } else if (this.methodProxies[property]){
+        } else if (this.methodProxies[property]) {
             return this.methodProxies[property];
         }
-        else if (typeof target[property] === "function" && this.registerMethod(property,target,target[`$${property}`])) {
+        else if (typeof target[property] === "function" && this.registerMethod(property, target, target[`$${property}`], target[`$$${property}`])) {
             return this.methodProxies[property];
         } else if (target[property] === undefined && property.startsWith("$")) {
             target[propertyName] = chainableProxyHandler.new(this.namespace, proxy, propertyName, this.iocContainerInstance, this.scopedRepo);
             if (target[propertyName]._$value) {
                 target[propertyName] = target[propertyName]._$value;
-            } 
-            if (target[propertyName]._handler && target[propertyName]._handler.requiresName === false && target[propertyName]._handler.isCompleted){
+            }
+            if (target[propertyName]._handler && target[propertyName]._handler.requiresName === false && target[propertyName]._handler.isCompleted) {
                 return target[propertyName]._handler.completeAssignment();
             }
         }
         return target[propertyName];
     }
 
-    registerMethod(property,target,definition){
+    registerMethod(property, target, definition, methodInterceptorDefinition) {
         if (!Array.isArray(definition)) return false;
-        this.methodProxies[property] = new Proxy(target[property], new methodHandler(definition, this.scopedRepo, this.iocContainerInstance));
+        this.methodProxies[property] = new Proxy(target[property], new methodHandler(definition, this.scopedRepo, this.iocContainerInstance, methodInterceptorDefinition));
         return true;
     }
 }

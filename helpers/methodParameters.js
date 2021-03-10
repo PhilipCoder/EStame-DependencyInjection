@@ -21,6 +21,7 @@ function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo,
     let parameters = null;
     let result = {};
     if (methodDefinition) {
+        if (!Array.isArray(methodDefinition)) throw "Method definition should be an array";
         parameters = [];
         result.parameters = parameters;
         for (let i = 0; i < methodDefinition.length; i++) {
@@ -38,7 +39,7 @@ function getMethodParameters(methodDefinition, iocContainerInstance, scopedRepo,
                 parameterValue = name;
             } else if (methodDefinition[i] === parameterTypes.container) {
                 parameterValue = iocContainerInstance._new(scopedRepo);
-            } else if (methodDefinition[i] === parameterTypes.events){
+            } else if (methodDefinition[i] === parameterTypes.events) {
                 parameterValue = {};
                 result.events = parameterValue;
             }
