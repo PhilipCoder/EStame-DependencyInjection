@@ -322,6 +322,58 @@ container.add("dashboard/wire", require("dashboardWire"));
 
 When more than one dependency needs to be registered on a namespace, it can be registered in a dependency collection. When the values are injected, the class instances and/or values will be injected in an array to the constructor or method. To register dependencies in dependency collections, use the addToCollection, addScopedToCollection, addSingletonToCollection or addValueToCollection methods on the IOC container. _Please note that dependency collections can not be used via property injection_.
 
+## Method Interceptors
+
+Method interceptors can be used to intercept a method invocation. Interceptors can be used to block the execution of a method or to return a different result from the method. When method interceptors are defined on a method, they will be invoked first before the method.
+
+A method interceptor is a class with a required function "intercept". The intercept method will be called with the same parameters as the method it is defined on. If the intercept method returns a value that evaluates to false, the method it is defined on will execute else the result of the intercept method will be returned and the method it is defined on will not be executed.
+
+Example of a method interceptor that will return a greeting message if the method is invoked with a value "John", else the method it is defined on will execute:
+
+```javascript
+//demoInterceptor.js
+class demoInterceptor{
+    static get $constructor(){return [/*dependencies can be injected here*/];}
+    constructor(){
+    }
+
+    intercept(name){
+        if (name === "John") return "Hello John";
+        return false;
+    }
+}
+```
+
+To add the interceptor to the IOC container:
+
+```javascript
+container.add("demoInterceptor", require("./demoInterceptor.js"));
+```
+
+To specify that an interceptor should be used on a method, a property with only a get and the same name as the method with leading double dollar signs ($$) should be available on the class.
+
+Example how to use the interceptor defined above on a method:
+
+```javascript
+//Server.js
+class server {
+    static get $constructor() { return []; }
+    constructor() {
+    }
+
+    //Dependency injection can be used as normal
+    get $runRequest() { return [undefined,...]; }
+    //Here we apply the interceptor to the method
+    get $$runRequest() { return ["demoInterceptor"] }
+    runRequest(name,...) {
+        if (!name) 
+        return !name ? "Name is not passed as an parameter" : "Your name is not John";
+    }
+}
+
+module.exports = server;
+```
+
 ## IOC Container Reference
 
 ### add
